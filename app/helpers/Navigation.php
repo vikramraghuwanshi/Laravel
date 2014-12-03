@@ -1,0 +1,185 @@
+<?php 
+class Navigation {
+
+	public static function nav_list($navigation, $class, $level=null) {	
+		$html ="";	
+		$html .= '<ul class="qa-'.$class.'-list'.(isset($level) ? (' qa-'.$class.'-list-'.$level) : '').'">';
+		$index=0;			
+		foreach ($navigation as $key => $navlink) {
+			//$this->set_context('nav_key', $key);
+			//$this->set_context('nav_index', $index++);
+			$html .= Navigation::nav_item($key, $navlink, $class, $level);
+		}
+		//$this->clear_context('nav_key');
+		//$this->clear_context('nav_index');			
+		$html .= '</ul>';
+		return $html;
+	}
+
+	public static function nav_item($key, $navlink, $class, $level=null) 	{	
+		$html ="";	
+		$suffix=strtr($key, array( // map special character in navigation key
+			'$' => '',
+			'/' => '-',
+		));			
+		$html .= '<li class="qa-'.$class.'-item'.(@$navlink['opposite'] ? '-opp' : '').
+				(@$navlink['state'] ? (' qa-'.$class.'-'.$navlink['state']) : '').' qa-'.$class.'-'.$suffix.'">';
+		$html .= Navigation::nav_link($navlink, $class);			
+		if (count(@$navlink['subnav']))
+			$this->nav_list($navlink['subnav'], $class, 1+$level);			
+		$html .= '</li>';
+		return $html;
+	}
+
+	public static function nav_link($navlink, $class) {
+		$html = "";
+		if (isset($navlink['url'])){
+			$html .= '<a href="'.$navlink['url'].'" class="qa-'.$class.'-link'.
+				(@$navlink['selected'] ? (' qa-'.$class.'-selected') : '').
+				(@$navlink['favorited'] ? (' qa-'.$class.'-favorited') : '').
+				'"'.(strlen(@$navlink['popup']) ? (' title="'.$navlink['popup'].'"') : '').
+				(isset($navlink['target']) ? (' target="'.$navlink['target'].'"') : '').'>'.$navlink['label'].
+				'</a>';
+		}
+		else{
+			$html .= '<span class="qa-'.$class.'-nolink'.(@$navlink['selected'] ? (' qa-'.$class.'-selected') : '').
+				(@$navlink['favorited'] ? (' qa-'.$class.'-favorited') : '').'"'.
+				(strlen(@$navlink['popup']) ? (' title="'.$navlink['popup'].'"') : '').
+				'>'.$navlink['label'].'</span>';			
+		}
+
+		if (isset($navlink['note']) && strlen($navlink['note'])){
+			$html .= '<span class="qa-'.$class.'-note">'.$navlink['note'].'</span>';
+		}				
+		return $html;
+	}
+
+	public static function nav($navtype, $level=null) {
+
+		//die("a");
+		$html = "";
+
+		$navArray = $qa_content = app('qa_content');
+		$navArray = $navArray['navigation'];
+		if(!isset($navArray[$navtype]) && empty($navArray[$navtype])){ 
+			return $html;
+		}
+		$navigation=$navArray[$navtype];
+		
+
+		if (($navtype=='user') || isset($navigation)) {
+			$html .= '<div class="qa-nav-'.$navtype.'">';
+			
+			//if ($navtype=='user')
+				//$this->logged_in();
+				
+			// reverse order of 'opposite' items since they float right
+			foreach (array_reverse($navigation, true) as $key => $navlink){
+				if (@$navlink['opposite']) {
+					unset($navigation[$key]);
+					$navigation[$key]=$navlink;
+				}
+			}
+			
+			//$this->set_context('nav_type', $navtype);
+			$html .= Navigation::nav_list($navigation, 'nav-'.$navtype, $level);
+			//$this->nav_clear($navtype);
+			//$this->clear_context('nav_type');
+
+			$html .= '</div>';
+			return $html;
+		}
+	}
+
+	public static function navData(){
+		$qa_content = app('qa_content');
+		echo "<pre>"; print_r($qa_content);die;
+		//Dynamic navigation..
+		return array("user" => array("login" => array("url" => "./index.php?qa=updates",
+														"label" => "Login"),
+									"register" => array("url" => "./index.php?qa=updates",
+														"label" => "Register")),
+					"main" => array("questions" => array("url" => "./index.php?qa=updates",
+														"label" => "Questions") ,
+									"unanswered" => array("url" => "./index.php?qa=updates",
+														"label" => "unanswered"),
+									"tag" => array("url" => "./index.php?qa=updates",
+														"label" => "tag"),
+									"user" => array("url" => "./index.php?qa=updates",
+														"label" => "Users"),
+									"ask" => array("url" => "./index.php?qa=updates",
+														"label" => "Ask a Question"),
+									"admin" => array("url" => "./index.php?qa=updates",
+														"label" => "admin")
+									),
+					"footer" => array("feedback" => array("url" => "./index.php?qa=updates",
+														"label" => "Send feedback"))
+				);
+	}
+
+	public static function test(){
+		$results = DB::select('select * from qa_options where title = ?', array("site_theme"));
+		echo "<pre>"; print_r($results);die;
+	}
+
+	public static function header() {
+		$header_html = "";
+		$qa_content = app('qa_content');
+
+		// Logo html section.
+		$header_html .= '<div class="qa-logo">';
+		$header_html .= $qa_content['logo'];
+		$header_html .= '</div>';
+
+		//Top section of user
+		$header_html .= Navigation::nav('user');
+
+		// Search section.
+		$search = $qa_content['search'];
+		
+		$header_html .= '<div class="qa-search">'.'<form '.$search['form_tags'].'>'.$search['form_extra'];
+		$header_html .=  '<input type="text" '.$search['field_tags'].' value="'.@$search['value'].'" class="qa-search-field"/>';
+		$header_html .= '<input type="submit" value="'.$search['button_label'].'" class="qa-search-button"/>';
+		$header_html .= '</form>'.'</div>';
+
+		// Main Navigation HTML.
+		$header_html .= Navigation::nav('main');
+
+		//Sub Navigation.
+		$header_html .= Navigation::nav('sub');
+		$header_html .= '<div class="qa-header-clear">'.'</div>';
+		return $header_html;
+ 		
+	}
+
+	public static function sidepanel(){
+		$sidepanel_html = '';
+		$sidepanel_html .= '<div class="qa-sidepanel">';
+
+		//Side bar
+		$qa_content = app('qa_content');
+
+		//$this->widgets('side', 'top');
+		$sidebar=$qa_content['sidebar'];			
+		if (!empty($sidebar)) {
+			$sidepanel_html .= '<div class="qa-sidebar">';
+			$sidepanel_html .= $sidebar;
+			$sidepanel_html .= '</div>';
+		}
+		//$this->widgets('side', 'high');
+		$sidepanel_html .= Navigation::nav('cat', 1);
+		//$this->widgets('side', 'low');
+		$sidepanel_html .= $qa_content['sidepanel'];
+		//$this->feed();
+		//$feed=$qa_content['feed'];
+			
+		//if (!empty($feed)) {
+			$sidepanel_html .= '<div class="qa-feed">';
+			$sidepanel_html .= '<a href="" class="qa-feed-link">Recent questions and answers</a>';
+			$sidepanel_html .= '</div>';
+		//}
+		//$this->widgets('side', 'bottom');
+		$sidepanel_html .= '</div>';
+		return $sidepanel_html;
+	}
+}
