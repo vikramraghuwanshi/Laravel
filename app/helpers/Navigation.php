@@ -55,18 +55,21 @@ class Navigation {
 	}
 
 	public static function nav($navtype, $level=null) {
-
-		//die("a");
 		$html = "";
-
+//echo "<br/>". 	currentRouteAction("profile");die;
 		$navArray = $qa_content = app('qa_content');
+		$navigation = array();		
 		$navArray = $navArray['navigation'];
-		if(!isset($navArray[$navtype]) && empty($navArray[$navtype])){ 
+		if(!isset($navArray[$navtype]) && empty($navArray[$navtype]) && $navtype!="sub"){ 
 			return $html;
 		}
-		$navigation=$navArray[$navtype];
-		
 
+		if($navtype=='sub'){
+			$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'profile',true);			
+		}		
+		else { 
+			$navigation=$navArray[$navtype];
+		}
 		if (($navtype=='user') || isset($navigation)) {
 			$html .= '<div class="qa-nav-'.$navtype.'">';
 			
@@ -123,11 +126,9 @@ class Navigation {
 				);
 	}
 
-	public static function test(){
-		//$results = DB::select('select * from qa_options where title = ?', array("site_theme"));
-		//echo "<pre>"; print_r($results);die;
-		$qa_content = app('qa_content1');
-		return $qa_content['vik'];
+	public static function test(){		
+		//$qa_content = app('qa_content1');
+		//return $qa_content['vik'];
 	}
 
 	public static function header() {
@@ -141,6 +142,7 @@ class Navigation {
 
 		//Top section of user
 		$header_html .= Navigation::nav('user');
+		
 
 		// Search section.
 		$search = $qa_content['search'];
@@ -152,11 +154,10 @@ class Navigation {
 
 		// Main Navigation HTML.
 		$header_html .= Navigation::nav('main');
-
 		$header_html .= '<div class="qa-nav-main-clear"></div>';
 
-		//Sub Navigation.
-		$header_html .= Navigation::nav('sub');
+		//Sub Navigation.	
+		$header_html .= Navigation::nav('sub');		
 		$header_html .= '<div class="qa-header-clear">'.'</div>';
 		return $header_html;
  		
