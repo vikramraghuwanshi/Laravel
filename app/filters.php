@@ -40,6 +40,14 @@ App::singleton('qa_content', function(){
 			$qa_content['logo']='<a href="/" class="qa-logo-link">'.$settings['site_title'].'</a>';
 		}
 
+				
+		$point_options = array('points_post_q', 'points_select_a', 'points_per_q_voted_up', 'points_per_q_voted_down', 'points_q_voted_max_gain', 'points_q_voted_max_loss',
+										'points_post_a', 'points_a_selected', 'points_per_a_voted_up', 'points_per_a_voted_down', 'points_a_voted_max_gain', 'points_a_voted_max_loss',
+										'points_vote_up_q', 'points_vote_down_q', 'points_vote_up_a', 'points_vote_down_a','points_multiple', 'points_base',);
+		foreach ($point_options as $key => $point_option) {
+			$qa_content['bonus_points'][$point_option] = $settings[$point_option];
+		}
+		 
 		// Search box
 		$qa_content['search']=array(
 			'form_tags' => 'method="get" action="/search"',
@@ -122,14 +130,14 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_users']){
 			$qa_content['navigation']['main']['user']=array(
-				'url' => "#",
+				'url' => "user",
 				'label' => "Users",
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
 		if ($settings['nav_ask']){
 			$qa_content['navigation']['main']['ask']=array(
-				'url' => "",
+				'url' => "ask",
 				'label' => "Ask a Question",
 			);
 		}
@@ -194,18 +202,30 @@ App::singleton('qa_content', function(){
 							'confirm' => "/confirm",
 							'logout' => "/logout",
 						);
-		if (!empty($userlinks['login'])){
-			$qa_content['navigation']['user']['login']=array(
-				'url' => "",
-				'label' => "Login",
+		if(Auth::check()){
+			$qa_content['navigation']['user']['login']= array(
+				'url' => 'updates',
+				'label' => "My Updates",
+			);
+			$qa_content['navigation']['user']['logout']=array(
+					'url' => 'logout',
+					'label' => "Logout",
 			);
 		}
-				
-		if (!empty($userlinks['register'])){
-			$qa_content['navigation']['user']['register']=array(
-				'url' => "#",
-				'label' => "Register",
-			);
+		else {
+			if (!empty($userlinks['login'])){
+				$qa_content['navigation']['user']['login']=array(
+					'url' => "login",
+					'label' => "Login",
+				);
+			}
+					
+			if (!empty($userlinks['register'])){
+				$qa_content['navigation']['user']['register']=array(
+					'url' => "register",
+					'label' => "Register",
+				);
+			}
 		}
 
 
