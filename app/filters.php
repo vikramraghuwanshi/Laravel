@@ -1,4 +1,5 @@
 <?php
+
 /*
 |--------------------------------------------------------------------------
 | Application & Route Filters
@@ -19,12 +20,12 @@ App::before(function($request)
 App::singleton('qa_content', function(){
         $settings = array();
 		$options = DB::select('select * from qa_options where 1 = ?', array("1"));
-		//echo "<pre>";print_r($options);die;
 		foreach ($options as $key => $option) {
 			$settings[$option->title] = $option->content;
 		}
 		// This is for making header.
 		$qa_content = array();
+		$qa_content['settings'] = $settings;
 		$logoshow = $settings['logo_show'];
 		$logourl = $settings['logo_url'];
 		$logowidth = $settings['logo_width'];
@@ -95,7 +96,7 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_questions']) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "test",
+				'url' => "#",
 				'label' => "Questions",
 			);
 		}
@@ -109,14 +110,14 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_unanswered']){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => "unanswered",
+				'url' => "#",
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos($settings['tags_or_categories'], 't')!==false) && $settings['nav_tags']){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => "tags",
+				'url' => "#",
 				'label' => "Tags",
 			);
 		}
