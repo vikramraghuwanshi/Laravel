@@ -36,8 +36,8 @@ class UserController extends BaseController {
 
 		// Check for favourite...
 		//DB::table('userfavorites')->leftJoin('words',function($leftJoin){ $join->on('userfavorites.entitytype','=','T')->where('words.wordid', '=', 'userfavorites.entityid')})->leftJoin('categories', function($leftJoin){ $join->on('userfavorites.entitytype','=','T')->where('entitytype', '=','C')})->where('userid' , '=' , Auth::user()->userid)->where('entitytype','!=','Q')->select('entitytype', 'IF (entitytype=U, entityid, NULL)', 'categories.backpath','words.word')->get();	
-		$favourite = DB::table('userfavorites')->leftJoin('words',function($leftJoin){ $leftJoin->on('words.wordid', '=', 'userfavorites.entityid','and','userfavorites.entitytype=T');})->leftJoin('categories', function($leftJoin){ $leftJoin->on('userfavorites.entitytype', '=','C');})->select('entitytype', 'userfavorites.entityid', 'categories.backpath','words.word')->where('userid' , '=' , 10)->where('entitytype','!=','Q')->get();	
-		echo "<pre>"; print_r($favourite);die;
+		//$favourite = DB::table('userfavorites')->leftJoin('words',function($leftJoin){ $leftJoin->on('words.wordid', '=', 'userfavorites.entityid','and','userfavorites.entitytype=T');})->leftJoin('categories', function($leftJoin){ $leftJoin->on('userfavorites.entitytype', '=','C');})->select('entitytype', 'userfavorites.entityid', 'categories.backpath','words.word')->where('userid' , '=' , 10)->where('entitytype','!=','Q')->get();	
+		//echo "<pre>"; print_r($favourite);die;
 		foreach ($users as $key => $user) {
 			$html .= '<tr>';
 			$html .= '<td class="qa-top-users-label">';

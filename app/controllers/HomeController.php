@@ -38,4 +38,10 @@ class HomeController extends BaseController {
 		return View::make('front.tags')->with('data', $data);
 	}
 
+	public function showSingleQuestion($qa){
+		$questions=new Question;
+		$data=$questions->getSingleQuestion($qa);
+		return View::make('front.single_question')->with('data', $data);
+	}
+
 }
