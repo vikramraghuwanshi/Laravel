@@ -21,14 +21,21 @@ class HomeController extends BaseController {
 	}
 
 	public function index(){
-		//Navigation::test();
-		//echo Navigation::nav("footer");
-		return View::make('front.index');
-		//die("vik");
-		//echo Helpers::doMessage();
-		//$helper = new Helpers();
-		//echo test();
-		//die("a");
+		$questions=new Question;
+		$data=$questions->getQuestions();
+		return View::make('front.index')->with('data', $data);
+	}
+
+	public function showUnanswerQuestion(){
+		$questions=new Question;
+		$data=$questions->getUnanswered();
+		return View::make('front.index')->with('data', $data);
+	}
+
+	public function showTags(){
+		$questions=new Question;
+		$data=$questions->getTags();
+		return View::make('front.tags')->with('data', $data);
 	}
 
 }

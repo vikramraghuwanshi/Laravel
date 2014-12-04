@@ -1,5 +1,5 @@
 <?php
-
+//die(' jrer');
 /*
 	Question2Answer (c) Gideon Greenspan
 
@@ -37,7 +37,7 @@
 /*
 	Return textual representation of $seconds
 */
-	{
+	{	//echo $seconds;die(' hrere');
 		if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }
 		
 		$seconds=max($seconds, 1);
@@ -252,7 +252,7 @@
 	$options is an array which sets what is displayed (see qa_post_html_defaults() in qa-app-options.php)
 	If something is missing from $post (e.g. ['content']), correponding HTML also omitted.
 */
-	{
+	{//echo "<pre>";print_r($options);
 		if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }
 		
 		require_once QA_INCLUDE_DIR.'qa-app-updates.php';

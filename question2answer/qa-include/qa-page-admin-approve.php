@@ -80,7 +80,7 @@
 		'messages' => array(),
 	);
 	
-	
+
 	if (count($users)) {
 		foreach ($users as $user) {
 			$message=array();

@@ -1,5 +1,5 @@
 <?php
-
+//die(' rer');
 /*
 	Question2Answer (c) Gideon Greenspan
 
@@ -126,7 +126,6 @@
 //	If we got this far, it's a good old-fashioned Q&A listing page
 	
 	require_once QA_INCLUDE_DIR.'qa-app-q-list.php';
-
 	qa_set_template('qa');
 	$questions=qa_any_sort_and_dedupe(array_merge($questions1, $questions2));
 	$pagesize=qa_opt('page_size_home');

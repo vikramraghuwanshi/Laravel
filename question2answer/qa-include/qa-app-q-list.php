@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Question2Answer (c) Gideon Greenspan
 
@@ -29,7 +28,7 @@
 		exit;
 	}
 
-	
+
 	function qa_q_list_page_content($questions, $pagesize, $start, $count, $sometitle, $nonetitle,
 		$navcategories, $categoryid, $categoryqcount, $categorypathprefix, $feedpathprefix, $suggest,
 		$pagelinkparams=null, $categoryparams=null, $dummy=null)
@@ -46,7 +45,8 @@
 	is used to suggest what the user should do. The $pagelinkparams are passed through to
 	qa_html_page_links(...) which creates links for page 2, 3, etc..
 */
-	{
+
+	{//echo "<pre>";print_r($questions);die(' reraa');
 		if (qa_to_override(__FUNCTION__)) { $args=func_get_args(); return qa_call_override(__FUNCTION__, $args); }
 		
 		require_once QA_INCLUDE_DIR.'qa-app-format.php';
@@ -56,7 +56,6 @@
 		
 		
 	//	Chop down to size, get user information for display
-
 		if (isset($pagesize))
 			$questions=array_slice($questions, 0, $pagesize);
 	

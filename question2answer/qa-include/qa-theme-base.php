@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Question2Answer (c) Gideon Greenspan
 
@@ -630,7 +629,7 @@
 		function main()
 		{
 			$content=$this->content;
-
+//echo "<pre>";print_r($content);exit(' rje');
 			$this->output('<div class="qa-main'.(@$this->content['hidden'] ? ' qa-main-hidden' : '').'">');
 			
 			$this->widgets('main', 'top');

@@ -57,8 +57,9 @@
 			foreach ($qa_db_pending_selectspecs as $pendingid => $selectspec)
 				if (!isset($qa_db_pending_results[$pendingid]))
 					$selectspecs['pending_'.$pendingid]=$selectspec;
-				
+		//echo "<pre>";print_r($selectspecs);die;
 		$outresults=$outresults+qa_db_multi_select($selectspecs);
+		//echo "<pre>";print_r($outresults);die;
 		
 		if (is_array($qa_db_pending_selectspecs))
 			foreach ($qa_db_pending_selectspecs as $pendingid => $selectspec)

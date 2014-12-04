@@ -353,7 +353,7 @@
 
 
 //	General information about the user, only available if we're using internal user management
-	
+	//echo qa_opt('db_time');die;
 	if (!QA_FINAL_EXTERNAL_USERS) {
 		$qa_content['form_profile']=array(
 			'tags' => 'method="post" action="'.qa_self_html().'"',

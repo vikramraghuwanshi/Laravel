@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Question2Answer (c) Gideon Greenspan
 

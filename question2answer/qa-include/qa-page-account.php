@@ -204,7 +204,6 @@
 
 	$qa_content['title']=qa_lang_html('profile/my_account_title');	
 	$qa_content['error']=@$errors['page'];
-	
 	$qa_content['form_profile']=array(
 		'tags' => 'enctype="multipart/form-data" method="post" action="'.qa_self_html().'"',
 		
