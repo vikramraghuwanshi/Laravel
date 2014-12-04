@@ -70,8 +70,14 @@ class Navigation {
 		if (($navtype=='user') || isset($navigation)) {
 			$html .= '<div class="qa-nav-'.$navtype.'">';
 			
-			//if ($navtype=='user')
-				//$this->logged_in();
+			if ($navtype=='user'){
+				if(Auth::check()){
+					$html .= '<div class="qa-logged-in">';
+					$html .= '<span class="qa-logged-in-pad">Hello </span>';
+					$html .= '<span class="qa-logged-in-data"><a class="qa-user-link" href="#">'.Auth::user()->handle.'</a></span></div>';
+				}
+			}
+				
 				
 			// reverse order of 'opposite' items since they float right
 			foreach (array_reverse($navigation, true) as $key => $navlink){
@@ -93,7 +99,7 @@ class Navigation {
 
 	public static function navData(){
 		$qa_content = app('qa_content');
-		echo "<pre>"; print_r($qa_content);die;
+		//echo "<pre>"; print_r($qa_content);die;
 		//Dynamic navigation..
 		return array("user" => array("login" => array("url" => "./index.php?qa=updates",
 														"label" => "Login"),
@@ -118,8 +124,10 @@ class Navigation {
 	}
 
 	public static function test(){
-		$results = DB::select('select * from qa_options where title = ?', array("site_theme"));
-		echo "<pre>"; print_r($results);die;
+		//$results = DB::select('select * from qa_options where title = ?', array("site_theme"));
+		//echo "<pre>"; print_r($results);die;
+		$qa_content = app('qa_content1');
+		return $qa_content['vik'];
 	}
 
 	public static function header() {
@@ -144,6 +152,8 @@ class Navigation {
 
 		// Main Navigation HTML.
 		$header_html .= Navigation::nav('main');
+
+		$header_html .= '<div class="qa-nav-main-clear"></div>';
 
 		//Sub Navigation.
 		$header_html .= Navigation::nav('sub');
