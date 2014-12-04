@@ -33,6 +33,7 @@
 	
 	$questionid=qa_post_text('a_questionid');
 	$userid=qa_get_logged_in_userid();
+
 	
 	list($question, $childposts)=qa_db_select_with_pending(
 		qa_db_full_post_selectspec($userid, $questionid),
@@ -56,7 +57,7 @@
 		$usecaptcha=qa_user_use_captcha(qa_user_level_for_post($question));
 		$answers=qa_page_q_load_as($question, $childposts);
 		$answerid=qa_page_q_add_a_submit($question, $answers, $usecaptcha, $in, $errors);
-		
+				
 	//	If successful, page content will be updated via Ajax
 
 		if (isset($answerid)) {

@@ -12,22 +12,22 @@ class Question extends Eloquent{
 	public function getQuestions(){
 		//$categoryids="CONCAT_WS(',', ^posts.catidpath1, ^posts.catidpath2, ^posts.catidpath3, ^posts.categoryid)";
 		DB::setFetchMode(PDO::FETCH_ASSOC);
-		$data = DB::table('qa_posts')
-	    ->leftjoin('qa_users', 'qa_users.userid', '=', 'qa_posts.userid')
-	    ->leftjoin('qa_userpoints', 'qa_userpoints.userid', '=', 'qa_posts.userid')
-	    ->leftjoin('qa_categories', 'qa_categories.categoryid', '=', 'qa_posts.categoryid')
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
 	    ->orderBy('postid', 'desc')
 	    ->where('type', '=', 'Q')
-	    ->get(array('qa_posts.*', 'qa_categories.title as categoryname', 
-	    			'qa_categories.backpath as categorybackpath',
-	    			'qa_userpoints.points',
-	    			'qa_users.flags',
-	    			'qa_users.level',
-	    			'qa_users.email',
-	    			'qa_users.handle',
-	    			'qa_users.avatarblobid',
-	    			'qa_users.avatarwidth',
-	    			'qa_users.avatarheight'
+	    ->get(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
 	    			));
 	    DB::setFetchMode(PDO::FETCH_CLASS);
 	    return $data;
@@ -35,23 +35,23 @@ class Question extends Eloquent{
 
 	public function getUnanswered(){
 		DB::setFetchMode(PDO::FETCH_ASSOC);
-		$data = DB::table('qa_posts')
-	    ->leftjoin('qa_users', 'qa_users.userid', '=', 'qa_posts.userid')
-	    ->leftjoin('qa_userpoints', 'qa_userpoints.userid', '=', 'qa_posts.userid')
-	    ->leftjoin('qa_categories', 'qa_categories.categoryid', '=', 'qa_posts.categoryid')
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
 	    ->orderBy('postid', 'desc')
 	    ->where('type', '=', 'Q')
 	    ->where('acount', '=' , 0)
-	    ->get(array('qa_posts.*', 'qa_categories.title as categoryname', 
-	    			'qa_categories.backpath as categorybackpath',
-	    			'qa_userpoints.points',
-	    			'qa_users.flags',
-	    			'qa_users.level',
-	    			'qa_users.email',
-	    			'qa_users.handle',
-	    			'qa_users.avatarblobid',
-	    			'qa_users.avatarwidth',
-	    			'qa_users.avatarheight'
+	    ->get(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
 	    			));
 	    DB::setFetchMode(PDO::FETCH_CLASS);
 	    return $data;
@@ -59,13 +59,13 @@ class Question extends Eloquent{
 
 	public function getTags(){
 		DB::setFetchMode(PDO::FETCH_ASSOC);
-		$data = DB::table('qa_posts')
-		->leftjoin('qa_words', 'qa_words.word', '=', 'qa_posts.tags')
+		$data = DB::table('posts')
+		->leftjoin('words', 'words.word', '=', 'posts.tags')
 		->distinct()
 		->orderBy('postid', 'desc')
 		->where('tags', '!=', 'NULL')
 		->where('tags', '!=', '')
-		->get(array('qa_posts.tags','qa_words.tagcount'));
+		->get(array('posts.tags','words.tagcount'));
 		DB::setFetchMode(PDO::FETCH_CLASS);
 		return $data;
 	}
@@ -77,6 +77,28 @@ class Question extends Eloquent{
 		$daysSinceEpoch = Carbon::create(2014, 12, 04, 15, 20, 31)->diffForHumans();
 		//echo $daysSinceEpoch;die;
 		return $created->diffForHumans();
+	}
+
+	public function getSingleQuestion($postid){
+		DB::setFetchMode(PDO::FETCH_ASSOC);
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
+	    ->where('postid', '=' , $postid)
+	    ->first(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
+	    			));
+	    DB::setFetchMode(PDO::FETCH_CLASS);
+	    return $data;
 	}
 
 }

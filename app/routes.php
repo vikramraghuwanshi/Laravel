@@ -16,6 +16,8 @@ Route::get('/', function()
 	return View::make('hello');
 });
 Route::get('test', array('uses' => 'HomeController@index'));
+Route::get('test/{qa}', array( 'uses' => 'HomeController@showSingleQuestion'));
+
 Route::get('unanswered', array('uses' => 'HomeController@showUnanswerQuestion'));
 Route::get('tags', array('uses' => 'HomeController@showTags'));
 Route::get('user', array('uses' => 'UserController@index'));

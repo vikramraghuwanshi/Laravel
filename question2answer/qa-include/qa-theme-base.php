@@ -310,7 +310,6 @@
 			$this->output('<body');
 			$this->body_tags();
 			$this->output('>');
-			
 			$this->body_script();
 			$this->body_header();
 			$this->body_content();
