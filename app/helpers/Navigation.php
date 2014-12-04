@@ -56,7 +56,7 @@ class Navigation {
 
 	public static function nav($navtype, $level=null) {
 		$html = "";
-//echo "<br/>". 	currentRouteAction("profile");die;
+
 		$navArray = $qa_content = app('qa_content');
 		$navigation = array();		
 		$navArray = $navArray['navigation'];
@@ -65,7 +65,17 @@ class Navigation {
 		}
 
 		if($navtype=='sub'){
-			$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'profile',true);			
+			$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);			
+			$routes = Route::currentRouteName();
+			$routesArray = explode(" ", $routes);
+			if(is_array($routesArray)){
+				if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="profile"){
+					$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);
+				}
+				if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
+					$navigation=User::qa_qs_sub_navigation(null,array());
+				}
+			}						
 		}		
 		else { 
 			$navigation=$navArray[$navtype];
@@ -77,7 +87,7 @@ class Navigation {
 				if(Auth::check()){
 					$html .= '<div class="qa-logged-in">';
 					$html .= '<span class="qa-logged-in-pad">Hello </span>';
-					$html .= '<span class="qa-logged-in-data"><a class="qa-user-link" href="#">'.Auth::user()->handle.'</a></span></div>';
+					$html .= '<span class="qa-logged-in-data"><a class="qa-user-link" href="profile">'.Auth::user()->handle.'</a></span></div>';
 				}
 			}
 				

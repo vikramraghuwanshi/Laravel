@@ -153,4 +153,52 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		}		
 		return $navigation;		
 	}
+
+	public static function qa_qs_sub_navigation($sort, $categoryslugs) {
+		$request='questions';
+		/*if (isset($categoryslugs)){
+			foreach ($categoryslugs as $slug) {
+				$request.='/'.$slug;
+			}
+		}*/
+
+		$navigation=array(
+			'recent' => array(
+				'label' => "Recent",
+				'url' => "#",
+			),
+			
+			'hot' => array(
+				'label' => "Hot!",
+				'url' => "#",
+			),
+			
+			'votes' => array(
+				'label' => "Most votes",
+				'url' => "#",
+			),
+
+			'answers' => array(
+				'label' => "Most answers",
+				'url' => "#",
+			),
+
+			'views' => array(
+				'label' => "Most views",
+				'url' => "#",
+			),
+		);
+		
+		/*if (isset($navigation[$sort])){
+			$navigation[$sort]['selected']=true;
+		}
+		else{
+			$navigation['recent']['selected']=true;
+		}
+		
+		if (!qa_opt('do_count_q_views')){
+			unset($navigation['views']);
+		}*/
+		return $navigation;
+	}
 }
