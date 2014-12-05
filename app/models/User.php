@@ -66,22 +66,24 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 				.($favorited ? ' qa-user-favorited' : '').($microformats ? ' url nickname' : '').'">'.($handle).'</a>') : '';
 	}
 
-	public function get_favorite(){
-		$favoritenonqs = DB::select('select `qa_userfavorites`.`entitytype`,`entityid`, `qa_categories`.`backpath`, `qa_words`.`word` from `qa_userfavorites` left join `qa_words` on `qa_userfavorites`.`entitytype` = ? and `qa_words`.`wordid` = `qa_userfavorites`.`entityid` left join `qa_categories` on `qa_userfavorites`.`entitytype` = ? and `qa_userfavorites`.`entitytype` = ? where `userid` = ? and `entitytype` != ?',array("T","T","C",Auth::user()->userid,"Q"));	
+	public function get_favorite(){		
 		$qa_favorite_non_qs_map = array();
-		foreach ($favoritenonqs as $favorite){ //echo "<pre>"; print_r($favorite);die;
-			switch ($favorite->entitytype) {
-				case "U":
-					$qa_favorite_non_qs_map['user'][$favorite->entityid]=true;
-					break;
-				
-				case "T":
-					$qa_favorite_non_qs_map['tag'][qa_strtolower($favorite->word)]=true;
-					break;
-				
-				case "C":
-					$qa_favorite_non_qs_map['category'][$favorite->backpath]=true;
-					break;
+		if(Auth::check()){
+			$favoritenonqs = DB::select('select `qa_userfavorites`.`entitytype`,`entityid`, `qa_categories`.`backpath`, `qa_words`.`word` from `qa_userfavorites` left join `qa_words` on `qa_userfavorites`.`entitytype` = ? and `qa_words`.`wordid` = `qa_userfavorites`.`entityid` left join `qa_categories` on `qa_userfavorites`.`entitytype` = ? and `qa_userfavorites`.`entitytype` = ? where `userid` = ? and `entitytype` != ?',array("T","T","C",Auth::user()->userid,"Q"));
+			foreach ($favoritenonqs as $favorite){ 
+				switch ($favorite->entitytype) {
+					case "U":
+						$qa_favorite_non_qs_map['user'][$favorite->entityid]=true;
+						break;
+					
+					case "T":
+						$qa_favorite_non_qs_map['tag'][qa_strtolower($favorite->word)]=true;
+						break;
+					
+					case "C":
+						$qa_favorite_non_qs_map['category'][$favorite->backpath]=true;
+						break;
+				}
 			}
 		}
 		return $qa_favorite_non_qs_map;
@@ -104,7 +106,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		$navigation = array(
 			'profile' => array(
 				'label' => 'User '.Auth::user()->handle,
-				'url' => '#',
+				'url' => 'profile',
 			),			
 			'account' => array(
 				'label' => 'My account',
@@ -154,51 +156,56 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $navigation;		
 	}
 
-	public static function qa_qs_sub_navigation($sort, $categoryslugs) {
-		$request='questions';
-		/*if (isset($categoryslugs)){
-			foreach ($categoryslugs as $slug) {
-				$request.='/'.$slug;
+	public function second_to_string($seconds){
+		$seconds=max($seconds, 1);		
+		$scales=array(
+			31557600 => array( '1 year'   , ' years'   ),
+			 2629800 => array( '1 month'  , ' months'  ),
+			  604800 => array( '1 week'   , ' weeks'   ),
+			   86400 => array( '1 day'    , ' days'    ),
+			    3600 => array( '1 hour'   , ' hours'   ),
+			      60 => array( '1 minute' , ' minutes' ),
+			       1 => array( '1 second' , ' seconds' ),
+		);		
+		foreach ($scales as $scale => $phrases){
+			if ($seconds>=$scale) {
+				$count=floor($seconds/$scale);
+			
+				if ($count==1){
+					$string=($phrases[0]);
+				}
+				else {
+					$string=($count.$phrases[1]);
+				}					
+				break;
 			}
-		}*/
+		}		
+		return $string;
+	}
 
-		$navigation=array(
-			'recent' => array(
-				'label' => "Recent",
-				'url' => "#",
-			),
-			
-			'hot' => array(
-				'label' => "Hot!",
-				'url' => "#",
-			),
-			
-			'votes' => array(
-				'label' => "Most votes",
-				'url' => "#",
-			),
-
-			'answers' => array(
-				'label' => "Most answers",
-				'url' => "#",
-			),
-
-			'views' => array(
-				'label' => "Most views",
-				'url' => "#",
-			),
-		);
-		
-		/*if (isset($navigation[$sort])){
-			$navigation[$sort]['selected']=true;
+	function qa_user_level_string($level){
+		if ($level>=120){
+			$string='Super Administrator';
+		}
+		elseif ($level>=100){
+			$string='Administrator';
+		}
+		elseif ($level>=80){
+			$string='Moderator';
+		}
+		elseif ($level>=50){
+			$string='Editor';
+		}
+		elseif ($level>=20){
+			$string='Expert';
+		}
+		elseif ($level>=10){
+			$string='Approved user';
 		}
 		else{
-			$navigation['recent']['selected']=true;
-		}
-		
-		if (!qa_opt('do_count_q_views')){
-			unset($navigation['views']);
-		}*/
-		return $navigation;
+			$string='Registered user';
+		}		
+		return ($string);
 	}
+	
 }
