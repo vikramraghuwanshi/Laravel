@@ -36,4 +36,9 @@ class ProfileController extends BaseController {
 
 		return View::make('profile.index')->with(array('html'=> $html,'time_str' => $time_str,'level' => $level));	
 	}
+
+	public function account(){
+		$html = '';	
+		return View::make('profile.account')->with('html'=> $html);
+	}
 }
