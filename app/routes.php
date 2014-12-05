@@ -15,9 +15,12 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
-Route::get('test', array('uses' => 'HomeController@index'));
+//Questions Route
+Route::get('question', array('uses' => 'HomeController@index'));
+Route::get('question/{qa}', array( 'uses' => 'HomeController@showSingleQuestion'));
 
-Route::get('test/{qa}', array( 'uses' => 'HomeController@showSingleQuestion'));
+//Answers Route
+Route::post('doAnswer', array('uses' => 'HomeController@doAnswer'));
 
 Route::get('unanswered', array('uses' => 'HomeController@showUnanswerQuestion'));
 Route::get('tags', array('uses' => 'HomeController@showTags'));

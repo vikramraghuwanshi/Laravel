@@ -44,4 +44,17 @@ class HomeController extends BaseController {
 		return View::make('front.single_question')->with('data', $data);
 	}
 
+	public function doAnswer(){
+		$rules = array(
+			'a_content'    => 'required|min:12', // make sure its required
+		);
+		// run the validation rules on the inputs from the form
+		$validator = Validator::make(Input::all(), $rules);
+		if ($validator->fails()) {
+			Session::flash('message', 'Email/Password can not be blank!');
+			return Redirect::to('/question/'.Input::get('qa'))
+				->withErrors($validator); // send back all errors to the login form
+		}
+	}
+
 }

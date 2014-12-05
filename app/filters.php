@@ -96,7 +96,7 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_questions']) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "test",
+				'url' => "question",
 				'label' => "Questions",
 			);
 		}
@@ -138,7 +138,7 @@ App::singleton('qa_content', function(){
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
 		if ($settings['nav_ask']){
 			$qa_content['navigation']['main']['ask']=array(
-				'url' => "ask",
+				'url' => URL::to('/ask'),
 				'label' => "Ask a Question",
 			);
 		}

@@ -221,10 +221,6 @@ class UserController extends BaseController {
 		}
 	}
 
-	function doLogout() {
-		Auth::logout();
-		return Redirect::to('login');
-	}
 
 	function askQuestion() {
 		$html = '';		
@@ -264,7 +260,7 @@ class UserController extends BaseController {
 
 	function doLogout(){
 		 Auth::logout();
-    	return Redirect::route('login');
+    	return Redirect::to('/login');
 	}
 
 }

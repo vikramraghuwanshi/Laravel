@@ -35,7 +35,7 @@
 					</div>
 				<div class="qa-q-item-main">
 					<div class="qa-q-item-title">
-						<a href="test/{{{ $record['postid'] }}}">{{{ $record['title'] }}}</a>
+						<a href="question/{{{ $record['postid'] }}}">{{{ $record['title'] }}}</a>
 					</div>
 					<span class="qa-q-item-avatar-meta">
 						<span class="qa-q-item-meta">

@@ -72,7 +72,7 @@ class Navigation {
 			if(is_array($routesArray)){
 				if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="profile"){
 					$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);
-
+				}
 				//if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
 				//	$navigation=User::qa_qs_sub_navigation(null,array());
 				//}

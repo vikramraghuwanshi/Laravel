@@ -72,14 +72,14 @@
 	<div class="qa-part-a-form">
 		<div id="anew" class="qa-a-form">
 			<h2>Your answer</h2>
-			<form name="a_form" action="./index.php?qa=11&amp;qa_1=what-is-your-filezilla" method="post">
+			<!--form start-->
+			{{ Form::open(array('url' => URL::to('/doAnswer'))) }}
+			{{ Form::hidden('qa',$data['postid']) }}
 				<table class="qa-form-tall-table">
 					<tbody><tr>
 						<td class="qa-form-tall-data">
-							<input type="hidden" value="1" id="a_content_ckeditor_ok" name="a_content_ckeditor_ok"><input type="hidden" value="" id="a_content_ckeditor_data" name="a_content_ckeditor_data">
-							<textarea class="qa-form-tall-text" cols="40" rows="12" name="a_content" >
-							</textarea>
-
+							{{ Form::textarea('a_content', Input::old('a_content'), array('placeholder' => 'Answer','class'=>'qa-form-tall-text','size' => '40x12')) }}
+							@if ($errors->has('a_content'))<div class="qa-form-tall-error">{{ $errors->first('a_content') }}</div> @endif
 						</td>
 					</tr>
 					<tr>
@@ -117,7 +117,7 @@
 				<input type="hidden" value="WYSIWYG Editor" name="a_editor">
 				<input type="hidden" value="1" name="a_doadd">
 				<input type="hidden" value="0-1417695874-b89c70a841daa91cf04b679907dfd379ea475d4f" name="code">
-			</form>
+			{{ Form::close() }}
 		</div> <!-- END qa-a-form -->
 		
 	</div>

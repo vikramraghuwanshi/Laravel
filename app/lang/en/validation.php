@@ -80,7 +80,12 @@ return array(
 	|
 	*/
 
-	'custom' => array(),
+	'custom' => array(
+		'a_content' => array(
+            'required' => 'Please provide more information - at least 12 characters',
+            'min'      => 'Please provide more information - at least 12 characters',
+        ),
+    ),
 
 	/*
 	|--------------------------------------------------------------------------
