@@ -30,6 +30,10 @@ class ProfileController extends BaseController {
 		//print_r();die;
 		$html .= with(new User)->qa_favorite_form("U",Auth::user()->userid,$favorite,$title);
 		//$navigation = with(new User)->qa_user_sub_navigation(Auth::user()->handle, 'profile',true); //True for logged in user.
-		return View::make('profile.index')->with('html', $html);	
+		$calculated_time = time()-strtotime(Auth::user()->created);
+		$time_str = with(new User)->second_to_string($calculated_time);	
+		$level = with(new User)->qa_user_level_string(Auth::user()->level);
+
+		return View::make('profile.index')->with(array('html'=> $html,'time_str' => $time_str,'level' => $level));	
 	}
 }

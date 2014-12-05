@@ -101,6 +101,91 @@ class Question extends Eloquent{
 	    return $data;
 	}
 
-}
+	public static function qa_qs_sub_navigation($sort, $categoryslugs) {
+		$request='questions';
+		/*if (isset($categoryslugs)){
+			foreach ($categoryslugs as $slug) {
+				$request.='/'.$slug;
+			}
+		}*/
 
-?>
+		$navigation=array(
+			'recent' => array(
+				'label' => "Recent",
+				'url' => "#",
+			),
+			
+			'hot' => array(
+				'label' => "Hot!",
+				'url' => "#",
+			),
+			
+			'votes' => array(
+				'label' => "Most votes",
+				'url' => "#",
+			),
+
+			'answers' => array(
+				'label' => "Most answers",
+				'url' => "#",
+			),
+
+			'views' => array(
+				'label' => "Most views",
+				'url' => "#",
+			),
+		);
+		
+		/*if (isset($navigation[$sort])){
+			$navigation[$sort]['selected']=true;
+		}
+		else{
+			$navigation['recent']['selected']=true;
+		}
+		
+		if (!qa_opt('do_count_q_views')){
+			unset($navigation['views']);
+		}*/
+		return $navigation;
+	}
+
+	public static function qa_unanswered_sub_navigation($by, $categoryslugs){
+		$request='unanswered';
+
+	/*	if (isset($categoryslugs)){
+			foreach ($categoryslugs as $slug){
+				$request.='/'.$slug;
+			}
+		}*/
+		
+		$navigation=array(
+			'by-answers' => array(
+				'label' => "No answer",
+				'url' => "#",
+			),
+			
+			'by-selected' => array(
+				'label' => "No selected answer",
+				'url' => "#",
+			),
+			
+			'by-upvotes' => array(
+				'label' => "No upvoted answer",
+				'url' => "#",
+			),
+		);
+		
+		/*if (isset($navigation['by-'.$by])){
+			$navigation['by-'.$by]['selected']=true;
+		}
+		else{
+			$navigation['by-answers']['selected']=true;
+		}
+			
+		if (!qa_opt('voting_on_as')){
+			unset($navigation['by-upvotes']);
+		}*/
+		return $navigation;
+	}
+
+}

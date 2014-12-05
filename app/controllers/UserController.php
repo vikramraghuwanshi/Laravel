@@ -18,30 +18,30 @@ class UserController extends BaseController {
      * Instantiate a new UserController instance.
      */
     public function __construct() {
-        $this->beforeFilter('auth', array('except' => array('index','loginView','doLogin','registerView','doRegister','askQuestion','doAskQuestion')));   
-
-       
+        $this->beforeFilter('auth', array('except' => array('index','loginView','doLogin','registerView','doRegister','askQuestion','doAskQuestion')));          
     }
 
 	public function index(){	
-//echo "<pre>"; print_r(Auth::user()->email);die;
-		/*if(Auth::check()){
-						echo  Auth::user()->email;die;
-					}
-					die("v");*/
 		$html = '';
-		$users = DB::table('users')->join('userpoints', 'users.userid', '=', 'userpoints.userid')
-		->select('users.userid', 'users.handle', 'userpoints.points','users.flags','users.email','users.avatarblobid','users.avatarwidth','avatarheight')
-		->orderBy('userpoints.points', 'desc')->get();
+		$users = with(new User)->get_all_users();
 
-		// Check for favourite...
-		//DB::table('userfavorites')->leftJoin('words',function($leftJoin){ $join->on('userfavorites.entitytype','=','T')->where('words.wordid', '=', 'userfavorites.entityid')})->leftJoin('categories', function($leftJoin){ $join->on('userfavorites.entitytype','=','T')->where('entitytype', '=','C')})->where('userid' , '=' , Auth::user()->userid)->where('entitytype','!=','Q')->select('entitytype', 'IF (entitytype=U, entityid, NULL)', 'categories.backpath','words.word')->get();	
-		//$favourite = DB::table('userfavorites')->leftJoin('words',function($leftJoin){ $leftJoin->on('words.wordid', '=', 'userfavorites.entityid','and','userfavorites.entitytype=T');})->leftJoin('categories', function($leftJoin){ $leftJoin->on('userfavorites.entitytype', '=','C');})->select('entitytype', 'userfavorites.entityid', 'categories.backpath','words.word')->where('userid' , '=' , 10)->where('entitytype','!=','Q')->get();	
-		//echo "<pre>"; print_r($favourite);die;
-		foreach ($users as $key => $user) {
+		// Check for favourite...		
+		$qa_favorite_non_qs_map = with(new User)->get_favorite();		
+		foreach ($users as $key => $user) {			
 			$html .= '<tr>';
+
 			$html .= '<td class="qa-top-users-label">';
 			$html .= '<a class="qa-user-link" href="profile">'.$user->handle.'</a>';
+
+			$html .= '<td class="qa-top-users-label">';			
+			if (isset($user->userid) && $user->handle){ 
+				$html .= with(new User)->qa_get_one_user_html($user->handle,false,isset($qa_favorite_non_qs_map['user'][$user->userid]));				
+			}
+			if (isset($user->lastuserid) && $user->lasthandle){ 
+				$html .= with(new User)->qa_get_one_user_html($user->lasthandle,false,isset($qa_favorite_non_qs_map['user'][$user->lastuserid]));
+				
+			}
+
 			$html .= '</td><td class="qa-top-users-score">'.$user->points.'</td>';
 			$html .= '</tr>';
 		}		
@@ -249,8 +249,8 @@ class UserController extends BaseController {
 			try {
 				//echo Input::get('password');die;
 				//$user = Auth::attempt(array('handle'=>Input::get('emailhandle'), 'password'=>Input::get('password')));
-				Session::put('user', $user);
-				die("Logged In");
+				//Session::put('user', $user);
+				//die("Logged In");
                 //return Redirect::to('myaccount');
 			}
 			catch (ParseException $error) {
@@ -260,6 +260,11 @@ class UserController extends BaseController {
 	            return Redirect::to('ask');
             }
 		}
+	}
+
+	function doLogout(){
+		 Auth::logout();
+    	return Redirect::route('login');
 	}
 
 }
