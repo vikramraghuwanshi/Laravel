@@ -41,7 +41,7 @@
 						<span class="qa-q-item-meta">
 							<span class="qa-q-item-what">asked</span>
 							<span class="qa-q-item-when">
-								<span class="qa-q-item-when-data">{{ Question::formattedCreatedDate($record['created']) }}</span><span class="qa-q-item-when-pad"> ago</span>
+								<span class="qa-q-item-when-data">{{ Question::formattedCreatedDate($record['created']) }}</span><span class="qa-q-item-when-pad"> </span>
 							</span>
 							<span class="qa-q-item-who">
 								<span class="qa-q-item-who-pad">by </span>

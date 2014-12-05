@@ -96,7 +96,7 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_questions']) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "#",
+				'url' => "test",
 				'label' => "Questions",
 			);
 		}
@@ -110,14 +110,14 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_unanswered']){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => "#",
+				'url' => "unanswered",
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos($settings['tags_or_categories'], 't')!==false) && $settings['nav_tags']){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => "#",
+				'url' => "tags",
 				'label' => "Tags",
 			);
 		}

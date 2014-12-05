@@ -41,7 +41,7 @@ class UserController extends BaseController {
 		foreach ($users as $key => $user) {
 			$html .= '<tr>';
 			$html .= '<td class="qa-top-users-label">';
-			$html .= '<a class="qa-user-link" href="/">'.$user->handle.'</a>';
+			$html .= '<a class="qa-user-link" href="profile">'.$user->handle.'</a>';
 			$html .= '</td><td class="qa-top-users-score">'.$user->points.'</td>';
 			$html .= '</tr>';
 		}		
@@ -219,6 +219,11 @@ class UserController extends BaseController {
 	            return Redirect::to('register');
             }
 		}
+	}
+
+	function doLogout() {
+		Auth::logout();
+		return Redirect::to('login');
 	}
 
 	function askQuestion() {

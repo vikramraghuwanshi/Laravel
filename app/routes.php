@@ -25,7 +25,7 @@ Route::get('tags', array('uses' => 'HomeController@showTags'));
 Route::get('user', array('uses' => 'UserController@index'));
 Route::get('login', array('uses' => 'UserController@loginView'));
 Route::get('logout', array('uses' => 'UserController@doLogout'));
-Route::get('updates', array('uses' => 'ProfileController@index'));
+Route::get('profile', array('uses' => 'ProfileController@index'));
 
 Route::get('register', array('uses' => 'UserController@registerView'));
 Route::get('ask', array('uses' => 'UserController@askQuestion'));
@@ -33,5 +33,6 @@ Route::post('doLogin', array('uses' => 'UserController@doLogin'));
 Route::post('doRegister', array('uses' => 'UserController@doRegister'));
 Route::post('doAskQuestion', array('uses' => 'UserController@doAskQuestion'));
 
+Route::post('profile', array('uses' => 'ProfileController@index'));
 
 
