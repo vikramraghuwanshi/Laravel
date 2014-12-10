@@ -190,17 +190,103 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	*Other parameters and the return value are as for qa_user_permit_error(...)
 	**/
 
-	public function qa_user_maximum_permit_error($permitoption, $limitaction=null, $checkblocks=true){
-		//echo $this->qa_user_level_maximum();die("Vik");
-		return $this->qa_user_permit_error($permitoption, $limitaction, $this->qa_user_level_maximum(), $checkblocks);
+	public static function qa_user_maximum_permit_error($permitoption, $limitaction=null, $checkblocks=true){		
+		return User::qa_user_permit_error($permitoption, $limitaction, User::qa_user_level_maximum(), $checkblocks);
+	}
+
+	/*
+		Return the sub navigation structure common to admin pages
+	*/
+
+	public static function qa_admin_sub_navigation(){
+		$navigation=array();
+		$level=Auth::user()->level;		
+		if ($level>=Config::get('constants.QA_USER_LEVEL_ADMIN')) {
+			$navigation['admin/general']=array(
+				'label' => "General",
+				'url' => 'admin/general',
+			);			
+			$navigation['admin/emails']=array(
+				'label' => "Emails",
+				'url' => 'admin/emails',
+			);			
+			$navigation['admin/user']=array(
+				'label' => 'Approve users',
+				'url' => 'admin/users',
+			);			
+			$navigation['admin/posting']=array(
+				'label' => 'Posting',
+				'url' => 'admin/posting',
+			);			
+			$navigation['admin/viewing']=array(
+				'label' => 'Viewing',
+				'url' => 'admin/viewing',
+			);
+			
+			$navigation['admin/lists']=array(
+				'label' => 'Lists',
+				'url' => 'admin/lists',
+			);			
+			if (User::qa_using_categories()){
+				$navigation['admin/categories']=array(
+					'label' => 'Categories',
+					'url' => 'admin/categories',
+				);
+			}			
+			$navigation['admin/permissions']=array(
+				'label' => 'Permissions',
+				'url' => 'admin/permissions',
+			);			
+			$navigation['admin/pages']=array(
+				'label' => 'Pages',
+				'url' => 'admin/pages',
+			);			
+			$navigation['admin/points']=array(
+				'label' => 'Points',
+				'url' => 'admin/points',
+			);			
+			$navigation['admin/spam']=array(
+				'label' => 'Spam',
+				'url' => 'admin/spam',
+			);			
+		}
+		if (!User::qa_user_maximum_permit_error('permit_moderate')) {			
+			$count=User::qa_user_permit_error('permit_moderate') ? null : Setting::qa_opt('cache_queuedcount'); // if only in some categories don't show cached count
+			$navigation['admin/moderate']=array(
+				'label' => "Moderate".($count ? (' ('.$count.')') : ''),
+				'url' => 'admin/moderate',
+			);
+		}
+		if (Setting::qa_opt('flagging_of_posts') && !User::qa_user_maximum_permit_error('permit_hide_show')) {
+			$count=User::qa_user_permit_error('permit_hide_show') ? null : Setting::qa_opt('cache_flaggedcount'); // if only in some categories don't show cached count
+			
+			$navigation['admin/flagged']=array(
+				'label' => "Flagged".($count ? (' ('.$count.')') : ''),
+				'url' => 'admin/flagged',
+			);
+		}
+		if ((!User::qa_user_maximum_permit_error('permit_hide_show')) || (!User::qa_user_maximum_permit_error('permit_delete_hidden'))){
+			$navigation['admin/hidden']=array(
+				'label' => 'Hidden',
+				'url' => 'admin/hidden',
+			);
+		}
+		return $navigation;
+	}
+
+	/*
+		Return whether the option is set to classify questions by categories
+	*/
+	public static function qa_using_categories(){
+		return strpos(Setting::qa_opt('tags_or_categories'), 'c')!==false;
 	}
 
 	/*
 		Return the maximum possible level of the logged in user in any context (i.e. for any category)
 	*/
-	public function qa_user_level_maximum(){
+	public static function qa_user_level_maximum(){
 		$level=Auth::user()->level;
-		$userlevels = $this->qa_get_logged_in_levels();		
+		$userlevels = User::qa_get_logged_in_levels();		
 		foreach ($userlevels as $userlevel){ 
 			$level=max($level, $userlevel['level']);
 		}		
@@ -210,8 +296,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/*
 		Return an array of all the specific (e.g. per category) level privileges for the logged in user, retrieving from the database if necessary
 	*/
-	public function qa_get_logged_in_levels(){ 
-		return $this->qa_db_user_levels_selectspec(Auth::user()->userid,true);
+	public static function qa_get_logged_in_levels(){ 
+		return User::qa_db_user_levels_selectspec(Auth::user()->userid,true);
 	}
 
 	/*
@@ -220,9 +306,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		information about these contexts (currently, categories).
 	*/
 
-	public function qa_db_user_levels_selectspec($identifier, $isuserid=false, $full=false){
+	public static function qa_db_user_levels_selectspec($identifier, $isuserid=false, $full=false){
 		$sql = 'Select entityid,entitytype,level FROM qa_userlevels '.($full ? ' LEFT JOIN qa_categories ON qa_userlevels.entitytype=? AND qa_userlevels.entityid=qa_categories.categoryid' : '').' WHERE userid='.($isuserid ? '?' : '(SELECT userid FROM ^users WHERE handle=? LIMIT 1)');
-		//print_r(DB::select($sql,array($identifier)));die("vvv");
 		return DB::select($sql,array($identifier));		
 	}
 
@@ -243,7 +328,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		'limit' => the user or IP address has reached a rate limit (if $limitaction specified)
 		false => the operation can go ahead
 	*/
-	public function qa_user_permit_error($permitoption=null, $limitaction=null, $userlevel=null, $checkblocks=true){
+	public static function qa_user_permit_error($permitoption=null, $limitaction=null, $userlevel=null, $checkblocks=true){
 		$userid=Auth::user()->userid;
 		if (!isset($userlevel)){
 			$userlevel=Auth::user()->level;
@@ -257,7 +342,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		//$qa_content = app('qa_content')['settings'];
 		//die("a");
 		//echo "<pre>"; print_r($qa_content);die;																																																																																																																																																																																																																			
-		$error=$this->qa_permit_error($permitoption, $userid, $userlevel, $flags);
+		$error=User::qa_permit_error($permitoption, $userid, $userlevel, $flags);
 		if ($checkblocks && (!$error) && false){ //if ($checkblocks && (!$error) && qa_is_ip_blocked()){
 			$error='ipblock';																							
 		}
@@ -281,7 +366,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		If $userid is currently logged in, you can set $userpoints=null to retrieve them only if necessary.
 	*/
 
-	public function qa_permit_error($permitoption, $userid, $userlevel, $userflags, $userpoints=null){
+	public static function qa_permit_error($permitoption, $userid, $userlevel, $userflags, $userpoints=null){
 		$permit=isset($permitoption) ? Setting::qa_opt($permitoption) : Config::get('constants.QA_PERMIT_ALL');
 		if (isset($userid) && (($permit==Config::get('constants.QA_PERMIT_POINTS')) || ($permit==Config::get('constants.QA_PERMIT_POINTS_CONFIRMED')) || ($permit==Config::get('constants.QA_PERMIT_APPROVED_POINTS')))){
 				// deal with points threshold by converting as appropriate
@@ -297,7 +382,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 				$permit=Config::get('constants.QA_PERMIT_EXPERTS'); // otherwise show a generic message so they're not tempted to collect points just for this
 			}
 		}		
-		return $this->qa_permit_value_error($permit, $userid, $userlevel, $userflags);
+		return User::qa_permit_value_error($permit, $userid, $userlevel, $userflags);
 	}
 
 	/*
@@ -305,7 +390,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		(generally retrieved from an option, but not always). Result as for qa_user_permit_error(...).
 	*/
 	
-	public function qa_permit_value_error($permit, $userid, $userlevel, $userflags){
+	public static function qa_permit_value_error($permit, $userid, $userlevel, $userflags){
 		//print_r($permit);die;	
 		//echo Config::get('constants.QA_PERMIT_EXPERTS');die;	
 		if ($permit>=Config::get('constants.QA_PERMIT_ALL')){

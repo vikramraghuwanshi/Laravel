@@ -62,7 +62,8 @@ App::before(function($request)
 											'footer' => array('feedback' => array('url' => "",
 															'label' => "Send feedback",
 														),
-											),	
+											),
+	
 									);
 		if (Setting::qa_opt('nav_home') && Setting::qa_opt('show_custom_home')){
 			$qa_content['navigation']['main']['$']=array(
@@ -88,28 +89,28 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_questions')) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => URL::to("/question"),
+				'url' => "question",
 				'label' => "Questions",
 			);
 		}
 
 		if (Setting::qa_opt('nav_hot')){
 			$qa_content['navigation']['main']['hot']=array(
-				'url' => URL::to("/question/hot"),
+				'url' => "#",
 				'label' => "Hot!",
 			);
 		}
 
 		if (Setting::qa_opt('nav_unanswered')){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => URL::to("/unanswered"),
+				'url' => "unanswered",
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos(Setting::qa_opt('tags_or_categories'), 't')!==false) && Setting::qa_opt('nav_tags')){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => URL::to("/tags"),
+				'url' => "tags",
 				'label' => "Tags",
 			);
 		}
@@ -123,31 +124,28 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_users')){
 			$qa_content['navigation']['main']['user']=array(
-				'url' => URL::to("/user"),
+				'url' => "user",
 				'label' => "Users",
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
 		if (Setting::qa_opt('nav_ask')){
 			$qa_content['navigation']['main']['ask']=array(
-				'url' => URL::to('/ask'),
+				'url' => "ask",
 				'label' => "Ask a Question",
 			);
-		}
-		//
-		//echo with(new User)->qa_user_level_string(120);die("vv");
-		if(Auth::check()){
-			//print_r(with(new User)->qa_user_maximum_permit_error('permit_moderate'));die("Vik");
+		}		
+		if(Auth::check()){			
 			if (
 				(Auth::user()->level>=Config::get('constants.QA_USER_LEVEL_ADMIN')) ||
-				(!with(new User)->qa_user_maximum_permit_error('permit_moderate')) ||
-				(!with(new User)->qa_user_maximum_permit_error('permit_hide_show')) ||
-				(!with(new User)->qa_user_maximum_permit_error('permit_delete_hidden'))
+				(!User::qa_user_maximum_permit_error('permit_moderate')) ||
+				(!User::qa_user_maximum_permit_error('permit_hide_show')) ||
+				(!User::qa_user_maximum_permit_error('permit_delete_hidden'))
 			)
-				$qa_content['navigation']['main']['admin']=array(
-					'url' => 'admin',
-					'label' => 'Admin',
-				);
+			$qa_content['navigation']['main']['admin']=array(
+				'url' => 'admin',
+				'label' => 'Admin',
+			);
 		}
 		
 		if (!Setting::qa_opt('feedback_enabled')){
