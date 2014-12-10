@@ -64,7 +64,6 @@ class Navigation {
 			return $html;
 		}
 
-
 		if($navtype=='sub'){ //echo $handle;die;
 			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);		
 			//echo $handle;die;	
@@ -73,6 +72,7 @@ class Navigation {
 			$tmpRoutesArray = array(); 
 			if(is_array($routesArray)){							
 				$profile_routes = array('account','profile','favorites','wall','activity','questions','answers','profile/{handle}');
+				$admin_routes = array('admin');
 				if(isset($routesArray[1]) && !empty($routesArray[1])&& in_array($routesArray[1],$profile_routes )){
 					$navigation=User::qa_user_sub_navigation($handle, 'profile',true);
 					//echo "<pre>"; print_r($navigation);die;
@@ -85,6 +85,9 @@ class Navigation {
 				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="unanswered"){
 					$navigation=Question::qa_unanswered_sub_navigation(null,array());
 					//$navigation[$routesArray[1]]['selected'] = 1;
+				}
+				elseif(isset($routesArray[1]) && !empty($routesArray[1])&& in_array($routesArray[1],$admin_routes )){
+					$navigation=User::qa_admin_sub_navigation();
 				}			
 			}						
 		}		
