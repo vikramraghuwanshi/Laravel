@@ -26,13 +26,12 @@ class UserController extends BaseController {
 		$users = with(new User)->get_all_users();
 
 		// Check for favourite...		
-		$qa_favorite_non_qs_map = with(new User)->get_favorite();		
+		$qa_favorite_non_qs_map = array();
+		if(Auth::check()){
+			$qa_favorite_non_qs_map = with(new User)->get_favorite(Auth::user()->userid);
+		}		
 		foreach ($users as $key => $user) {			
 			$html .= '<tr>';
-
-			$html .= '<td class="qa-top-users-label">';
-			$html .= '<a class="qa-user-link" href="profile">'.$user->handle.'</a>';
-
 			$html .= '<td class="qa-top-users-label">';			
 			if (isset($user->userid) && $user->handle){ 
 				$html .= with(new User)->qa_get_one_user_html($user->handle,false,isset($qa_favorite_non_qs_map['user'][$user->userid]));				
@@ -41,7 +40,6 @@ class UserController extends BaseController {
 				$html .= with(new User)->qa_get_one_user_html($user->lasthandle,false,isset($qa_favorite_non_qs_map['user'][$user->lastuserid]));
 				
 			}
-
 			$html .= '</td><td class="qa-top-users-score">'.$user->points.'</td>';
 			$html .= '</tr>';
 		}		
@@ -55,8 +53,7 @@ class UserController extends BaseController {
 		return View::make('user.login')->with('label', $label);
 	}
 
-	function doLogin() {
-		//die("doLogin");
+	function doLogin() {		
 		$rules = array(
 			'emailhandle'    => 'required', // make sure its required
 			'password'    => 'required|alphaNum|min:3' // password can only be alphanumeric and has to be greater than 3 characters
@@ -70,8 +67,7 @@ class UserController extends BaseController {
 				->withInput(Input::except('password')); // send back the input (not the password) so that we can repopulate the form
 		}
 		else {
-			try {
-				//echo Input::get('password');die;
+			try {				
 				$user = array(
 						  'username' => Input::get('emailhandle'),
 						  'password' => Input::get('password')
@@ -80,9 +76,8 @@ class UserController extends BaseController {
 					//Session::put('user', $user);
 					Auth::login(Auth::user(), true);
 					return Redirect::to('user');
-                	//echo 'SUCCESS!';die("gg");
-                }
-                //die("vv");
+                	
+                }               
 			}
 			catch (ParseException $error) {
 	            // The login failed. Check error to see why.
@@ -220,7 +215,6 @@ class UserController extends BaseController {
             }
 		}
 	}
-
 
 	function doLogout(){
 		 Auth::logout();

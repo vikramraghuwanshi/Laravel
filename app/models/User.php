@@ -62,28 +62,30 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	public function qa_get_one_user_html($handle, $microformats=false, $favorited=false){ 
-		return strlen($handle) ? ('<a href="#" class="qa-user-link'
+		return strlen($handle) ? ('<a href="profile/'.$handle.'" class="qa-user-link'
 				.($favorited ? ' qa-user-favorited' : '').($microformats ? ' url nickname' : '').'">'.($handle).'</a>') : '';
 	}
 
-	public function get_favorite(){		
-		$qa_favorite_non_qs_map = array();
-		if(Auth::check()){
-			$favoritenonqs = DB::select('select `qa_userfavorites`.`entitytype`,`entityid`, `qa_categories`.`backpath`, `qa_words`.`word` from `qa_userfavorites` left join `qa_words` on `qa_userfavorites`.`entitytype` = ? and `qa_words`.`wordid` = `qa_userfavorites`.`entityid` left join `qa_categories` on `qa_userfavorites`.`entitytype` = ? and `qa_userfavorites`.`entitytype` = ? where `userid` = ? and `entitytype` != ?',array("T","T","C",Auth::user()->userid,"Q"));
-			foreach ($favoritenonqs as $favorite){ 
-				switch ($favorite->entitytype) {
-					case "U":
-						$qa_favorite_non_qs_map['user'][$favorite->entityid]=true;
-						break;
-					
-					case "T":
-						$qa_favorite_non_qs_map['tag'][qa_strtolower($favorite->word)]=true;
-						break;
-					
-					case "C":
-						$qa_favorite_non_qs_map['category'][$favorite->backpath]=true;
-						break;
-				}
+	function get_user_by_handle($handle){
+		return DB::table('users')->select('userid','handle','created','level')->where('handle', $handle)->first();
+	}
+
+	public function get_favorite($user_id){		
+		$qa_favorite_non_qs_map = array();		
+		$favoritenonqs = DB::select('select `qa_userfavorites`.`entitytype`,`entityid`, `qa_categories`.`backpath`, `qa_words`.`word` from `qa_userfavorites` left join `qa_words` on `qa_userfavorites`.`entitytype` = ? and `qa_words`.`wordid` = `qa_userfavorites`.`entityid` left join `qa_categories` on `qa_userfavorites`.`entitytype` = ? and `qa_userfavorites`.`entitytype` = ? where `userid` = ? and `entitytype` != ?',array("T","T","C",$user_id,"Q"));
+		foreach ($favoritenonqs as $favorite){ 
+			switch ($favorite->entitytype) {
+				case "U":
+					$qa_favorite_non_qs_map['user'][$favorite->entityid]=true;
+					break;
+				
+				case "T":
+					$qa_favorite_non_qs_map['tag'][qa_strtolower($favorite->word)]=true;
+					break;
+				
+				case "C":
+					$qa_favorite_non_qs_map['category'][$favorite->backpath]=true;
+					break;
 			}
 		}
 		return $qa_favorite_non_qs_map;
@@ -95,61 +97,33 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		->orderBy('userpoints.points', 'desc')->get();
 	}
 
-	public function qa_favorite_form($entitytype, $entityid, $favorite, $title){
+	public function qa_favorite_form($handle,$entitytype, $entityid, $favorite, $title){
 		$html = '<form method="post" action="#"><h1><span id="favoriting" class="qa-favoriting">';
 		$html .= '<input type="submit" class="qa-unfavorite-button" value="" onclick="return qa_favorite_click(this);" name="favorite_'.$entitytype.'_'.$entityid.'_'.(int)!$favorite.'" title="'.$title.'"> </span>';
-		$html .= 'User '.Auth::user()->handle.'</h1></form>';
+		$html .= 'User '.$handle.'</h1></form>';
 		return $html;
 	}
 
-	public static function qa_user_sub_navigation($handle, $selected, $ismyuser=false){
-		$navigation = array(
-			'profile' => array(
-				'label' => 'User '.Auth::user()->handle,
-				'url' => 'profile',
-			),			
-			'account' => array(
-				'label' => 'My account',
-				'url' => '#',
-			),
-			
-			'favorites' => array(
-				'label' => "My favorites",
-				'url' => "#",
-			),
-			
-			'wall' => array(
-				'label' => 'Wall',
-				'url' => '#',
-			),
-			
-			'activity' => array(
-				'label' => 'Recent activity',
-				'url' =>'#',
-			),
-			
-			'questions' => array(
-				'label' => 'All questions',
-				'url' => '#',
-			),
-			
-			'answers' => array(
-				'label' => 'All answers',
-				'url' => '#',
-			),
-		);		
+	public static function qa_user_sub_navigation($handle, $selected, $ismyuser=false){		
+		$navigation['profile'] =  array('label' => 'User '.$handle,	'url' => 'profile');
+		if(Auth::check()){
+			$navigation['account'] = array('label' => "My Account",'url' => "account");
+			$navigation['favorites'] = array('label' => "My favorites",	'url' => "favorites");
+		}
+		$navigation['wall'] = array('label' => 'Wall','url' => 'wall');
+		$navigation['activity'] = array('label' => 'Recent activity','url' =>'activity');
+		$navigation['questions'] = array('label' => 'All questions',	'url' => 'questions');
+		$navigation['answers'] = array('label' => 'All answers','url' => 'answers');
 		if (isset($navigation[$selected])){
 			$navigation[$selected]['selected']=true;
 		}
-		$qa_content = app('qa_content');	
-		if (!$qa_content['settings']['allow_user_walls']){
+		//$qa_content = app('qa_content');	
+		if (!Setting::qa_opt('allow_user_walls')){
 			unset($navigation['wall']);
-		}
-			
+		}			
 		if (!$ismyuser){
 			unset($navigation['account']);
-		}
-			
+		}			
 		if (!$ismyuser){
 			unset($navigation['favorites']);
 		}		
@@ -184,22 +158,23 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	function qa_user_level_string($level){
-		if ($level>=120){
+		//echo Config::get('QA_USER_LEVEL_SUPER');die;
+		if ($level>=Config::get('constants.QA_USER_LEVEL_SUPER')){
 			$string='Super Administrator';
 		}
-		elseif ($level>=100){
+		elseif ($level>=Config::get('constants.QA_USER_LEVEL_ADMIN')){
 			$string='Administrator';
 		}
-		elseif ($level>=80){
+		elseif ($level>=Config::get('constants.QA_USER_LEVEL_MODERATOR')){
 			$string='Moderator';
 		}
-		elseif ($level>=50){
+		elseif ($level>=Config::get('constants.QA_USER_LEVEL_EDITOR')){
 			$string='Editor';
 		}
-		elseif ($level>=20){
+		elseif ($level>=Config::get('constants.QA_USER_LEVEL_EXPERT')){
 			$string='Expert';
 		}
-		elseif ($level>=10){
+		elseif ($level>=Config::get('constants.QA_USER_LEVEL_APPROVED')){
 			$string='Approved user';
 		}
 		else{
@@ -207,5 +182,188 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		}		
 		return ($string);
 	}
+
+	// All function for checking permissions of user.
 	
+	/**
+	*Check whether the logged in user would have permittion to perform $permitoption in any context (i.e. for any category)
+	*Other parameters and the return value are as for qa_user_permit_error(...)
+	**/
+
+	public function qa_user_maximum_permit_error($permitoption, $limitaction=null, $checkblocks=true){
+		//echo $this->qa_user_level_maximum();die("Vik");
+		return $this->qa_user_permit_error($permitoption, $limitaction, $this->qa_user_level_maximum(), $checkblocks);
+	}
+
+	/*
+		Return the maximum possible level of the logged in user in any context (i.e. for any category)
+	*/
+	public function qa_user_level_maximum(){
+		$level=Auth::user()->level;
+		$userlevels = $this->qa_get_logged_in_levels();		
+		foreach ($userlevels as $userlevel){ 
+			$level=max($level, $userlevel['level']);
+		}		
+		return $level;
+	}
+
+	/*
+		Return an array of all the specific (e.g. per category) level privileges for the logged in user, retrieving from the database if necessary
+	*/
+	public function qa_get_logged_in_levels(){ 
+		return $this->qa_db_user_levels_selectspec(Auth::user()->userid,true);
+	}
+
+	/*
+		Return the selectspec to retrieve all of the context specific (currently per-categpry) levels for the user identified by
+		$identifier, which is treated as a userid if $isuserid is true, otherwise as a handle. Set $full to true to obtain extra
+		information about these contexts (currently, categories).
+	*/
+
+	public function qa_db_user_levels_selectspec($identifier, $isuserid=false, $full=false){
+		$sql = 'Select entityid,entitytype,level FROM qa_userlevels '.($full ? ' LEFT JOIN qa_categories ON qa_userlevels.entitytype=? AND qa_userlevels.entityid=qa_categories.categoryid' : '').' WHERE userid='.($isuserid ? '?' : '(SELECT userid FROM ^users WHERE handle=? LIMIT 1)');
+		//print_r(DB::select($sql,array($identifier)));die("vvv");
+		return DB::select($sql,array($identifier));		
+	}
+
+	/*
+		Check whether the logged in user has permission to perform $permitoption. If $permitoption is null, this simply
+		checks whether the user is blocked. Optionally provide an $limitaction (see top of qa-app-limits.php) to also check
+		against user or IP rate limits. You can pass in a QA_USER_LEVEL_* constant in $userlevel to consider the user at a
+		different level to usual (e.g. if they are performing this action in a category for which they have elevated
+		privileges). To ignore the user's blocked status, set $checkblocks to false.
+
+		Possible results, in order of priority (i.e. if more than one reason, the first will be given):
+		'level' => a special privilege level (e.g. expert) or minimum number of points is required
+		'login' => the user should login or register
+		'userblock' => the user has been blocked
+		'ipblock' => the ip address has been blocked
+		'confirm' => the user should confirm their email address
+		'approve' => the user needs to be approved by the site admins
+		'limit' => the user or IP address has reached a rate limit (if $limitaction specified)
+		false => the operation can go ahead
+	*/
+	public function qa_user_permit_error($permitoption=null, $limitaction=null, $userlevel=null, $checkblocks=true){
+		$userid=Auth::user()->userid;
+		if (!isset($userlevel)){
+			$userlevel=Auth::user()->level;
+		}
+
+		$flags=Auth::user()->flags;
+		if (!$checkblocks){
+			$flags&=~Config::get('constants.QA_USER_FLAGS_USER_BLOCKED');
+		}
+		//$myApp = App::make('qa_content');
+		//$qa_content = app('qa_content')['settings'];
+		//die("a");
+		//echo "<pre>"; print_r($qa_content);die;																																																																																																																																																																																																																			
+		$error=$this->qa_permit_error($permitoption, $userid, $userlevel, $flags);
+		if ($checkblocks && (!$error) && false){ //if ($checkblocks && (!$error) && qa_is_ip_blocked()){
+			$error='ipblock';																							
+		}
+		if ((!$error) && isset($userid) && ($flags & Config::get('constants.QA_USER_FLAGS_MUST_CONFIRM')) && Setting::qa_opt('confirm_user_emails')){
+			$error='confirm';
+		}
+		if ((!$error) && isset($userid) && ($flags & Config::get('constants.QA_USER_FLAGS_MUST_APPROVE')) && Setting::qa_opt('moderate_users')){
+			$error='approve';
+		}
+		if (isset($limitaction) && !$error){
+			if (qa_user_limits_remaining($limitaction)<=0){
+				$error='limit';
+			}
+		}
+		return $error;
+	}
+
+	/*
+		Check whether $userid (null for no user) can perform $permitoption. Result as for qa_user_permit_error(...).
+		If appropriate, pass the user's level in $userlevel, flags in $userflags and points in $userpoints.
+		If $userid is currently logged in, you can set $userpoints=null to retrieve them only if necessary.
+	*/
+
+	public function qa_permit_error($permitoption, $userid, $userlevel, $userflags, $userpoints=null){
+		$permit=isset($permitoption) ? Setting::qa_opt($permitoption) : Config::get('constants.QA_PERMIT_ALL');
+		if (isset($userid) && (($permit==Config::get('constants.QA_PERMIT_POINTS')) || ($permit==Config::get('constants.QA_PERMIT_POINTS_CONFIRMED')) || ($permit==Config::get('constants.QA_PERMIT_APPROVED_POINTS')))){
+				// deal with points threshold by converting as appropriate
+			
+			if((!isset($userpoints)) && ($userid==qa_get_logged_in_userid())){
+				$userpoints=qa_get_logged_in_points(); // allow late retrieval of points (to avoid unnecessary DB query when using external users)
+			}		
+			if($userpoints>=Setting::qa_opt($permitoption.'_points')){
+				$permit=($permit==Config::get('constants.QA_PERMIT_APPROVED_POINTS')) ? Config::get('constants.QA_PERMIT_APPROVED') :
+					(($permit==Config::get('constants.QA_PERMIT_POINTS_CONFIRMED')) ? Config::get('constants.QA_PERMIT_CONFIRMED') : Config::get('constants.QA_PERMIT_USERS')); // convert if user has enough points
+			}
+			else{
+				$permit=Config::get('constants.QA_PERMIT_EXPERTS'); // otherwise show a generic message so they're not tempted to collect points just for this
+			}
+		}		
+		return $this->qa_permit_value_error($permit, $userid, $userlevel, $userflags);
+	}
+
+	/*
+		Check whether $userid of level $userlevel with $userflags can reach the permission level in $permit
+		(generally retrieved from an option, but not always). Result as for qa_user_permit_error(...).
+	*/
+	
+	public function qa_permit_value_error($permit, $userid, $userlevel, $userflags){
+		//print_r($permit);die;	
+		//echo Config::get('constants.QA_PERMIT_EXPERTS');die;	
+		if ($permit>=Config::get('constants.QA_PERMIT_ALL')){
+			$error=false;
+		}			
+		elseif ($permit>=Config::get('constants.QA_PERMIT_USERS')){
+			$error=isset($userid) ? false : 'login';
+		}			
+		elseif ($permit>=Config::get('constants.QA_PERMIT_CONFIRMED')) {
+			if (!isset($userid)){
+				$error='login';
+			}			
+			elseif (
+				Config::get('constants.QA_FINAL_EXTERNAL_USERS') || // not currently supported by single sign-on integration
+				($userlevel>=Config::get('constants.QA_PERMIT_APPROVED')) || // if user approved or assigned to a higher level, no need
+				($userflags & Config::get('constants.QA_USER_FLAGS_EMAIL_CONFIRMED')) || // actual confirmation
+				(!qa_opt('confirm_user_emails')) // if this option off, we can't ask it of the user
+			){
+				$error=false;
+			}
+			else {
+				$error='confirm';
+			}
+
+		} elseif ($permit>=Config::get('constants.QA_PERMIT_APPROVED')) {
+			if (!isset($userid)){
+				$error='login';
+			}
+				
+			elseif (
+				($userlevel>=Config::get('constants.QA_USER_LEVEL_APPROVED')) || // user has been approved
+				(!qa_opt('moderate_users')) // if this option off, we can't ask it of the user
+			){
+				$error=false;
+			}				
+			else{
+				$error='approve';
+			}
+		
+		} elseif ($permit>=Config::get('constants.QA_PERMIT_EXPERTS')){
+			$error=(isset($userid) && ($userlevel>=Config::get('constants.QA_USER_LEVEL_EXPERT'))) ? false : 'level';
+		}			
+		elseif ($permit>=Config::get('constants.QA_PERMIT_EDITORS')){
+			$error=(isset($userid) && ($userlevel>=Config::get('constants.QA_USER_LEVEL_EDITOR'))) ? false : 'level';
+		}			
+		elseif ($permit>=Config::get('constants.QA_PERMIT_MODERATORS')){
+			$error=(isset($userid) && ($userlevel>=Config::get('constants.QA_USER_LEVEL_MODERATOR'))) ? false : 'level';
+		}			
+		elseif ($permit>=Config::get('constants.QA_PERMIT_ADMINS')){
+			$error=(isset($userid) && ($userlevel>=Config::get('constants.QA_USER_LEVEL_ADMIN'))) ? false : 'level';
+		}			
+		else {
+			$error=(isset($userid) && ($userlevel>=Config::get('constants.QA_USER_LEVEL_SUPER'))) ? false : 'level';
+		}		
+		if (isset($userid) && ($userflags & Config::get('constants.QA_USER_FLAGS_USER_BLOCKED')) && ($error!='level')){
+			$error='userblock';
+		}
+		//echo $error;die;		
+		return $error;
+	}
 }

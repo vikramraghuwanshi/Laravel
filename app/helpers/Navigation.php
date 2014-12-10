@@ -41,11 +41,11 @@ class Navigation {
 				(isset($navlink['target']) ? (' target="'.$navlink['target'].'"') : '').'>'.$navlink['label'].
 				'</a>';
 		}
-		else{
+		else{ //print_r($navlink);die;
 			$html .= '<span class="qa-'.$class.'-nolink'.(@$navlink['selected'] ? (' qa-'.$class.'-selected') : '').
 				(@$navlink['favorited'] ? (' qa-'.$class.'-favorited') : '').'"'.
 				(strlen(@$navlink['popup']) ? (' title="'.$navlink['popup'].'"') : '').
-				'>'.$navlink['label'].'</span>';			
+				'>'.$navlink['label'].'</span>';		
 		}
 
 		if (isset($navlink['note']) && strlen($navlink['note'])){
@@ -54,7 +54,7 @@ class Navigation {
 		return $html;
 	}
 
-	public static function nav($navtype, $level=null) {
+	public static function nav($navtype, $level=null,$handle) {
 		$html = "";
 
 		$navArray = $qa_content = app('qa_content');
@@ -64,29 +64,35 @@ class Navigation {
 			return $html;
 		}
 
-		if($navtype=='sub'){		
+
+		if($navtype=='sub'){ //echo $handle;die;
+			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);		
+			//echo $handle;die;	
 			$routes = Route::currentRouteName();
 			$routesArray = explode(" ", $routes);
-			$uri = Request::path();
-			if(is_array($routesArray)){
-				if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="profile"){
-					$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);
+			$tmpRoutesArray = array(); 
+			if(is_array($routesArray)){							
+				$profile_routes = array('account','profile','favorites','wall','activity','questions','answers','profile/{handle}');
+				if(isset($routesArray[1]) && !empty($routesArray[1])&& in_array($routesArray[1],$profile_routes )){
+					$navigation=User::qa_user_sub_navigation($handle, 'profile',true);
+					//echo "<pre>"; print_r($navigation);die;
+					//$navigation[$routesArray[1]]['selected'] = 1;
 				}
-				//if(isset($uri) && !empty($uri)&&preg_match('/question/',$uri))
-				elseif(isset($uri) && !empty($uri)&&preg_match('/question/',$uri)){
+				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
 					$navigation=Question::qa_qs_sub_navigation(null,array());
+					//$navigation[$routesArray[1]]['selected'] = 1;
 				}
 				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="unanswered"){
 					$navigation=Question::qa_unanswered_sub_navigation(null,array());
-				}
+					//$navigation[$routesArray[1]]['selected'] = 1;
+				}			
 			}						
 		}		
 		else { 
 			$navigation=$navArray[$navtype];
 		}
 		if (($navtype=='user') || isset($navigation)) {
-			$html .= '<div class="qa-nav-'.$navtype.'">';
-			
+			$html .= '<div class="qa-nav-'.$navtype.'">';			
 			if ($navtype=='user'){
 				if(Auth::check()){
 					$html .= '<div class="qa-logged-in">';
@@ -145,7 +151,7 @@ class Navigation {
 		//return $qa_content['vik'];
 	}
 
-	public static function header() {
+	public static function header($handle=null) { //echo $handle;die;
 		$header_html = "";
 		$qa_content = app('qa_content');
 
@@ -155,7 +161,7 @@ class Navigation {
 		$header_html .= '</div>';
 
 		//Top section of user
-		$header_html .= Navigation::nav('user');
+		$header_html .= Navigation::nav('user',null,$handle);
 		
 
 		// Search section.
@@ -167,11 +173,11 @@ class Navigation {
 		$header_html .= '</form>'.'</div>';
 
 		// Main Navigation HTML.
-		$header_html .= Navigation::nav('main');
+		$header_html .= Navigation::nav('main',null,$handle);
 		$header_html .= '<div class="qa-nav-main-clear"></div>';
 
 		//Sub Navigation.	
-		$header_html .= Navigation::nav('sub');		
+		$header_html .= Navigation::nav('sub',null,$handle);	
 		$header_html .= '<div class="qa-header-clear">'.'</div>';
 		return $header_html;
  		
@@ -192,7 +198,7 @@ class Navigation {
 			$sidepanel_html .= '</div>';
 		}
 		//$this->widgets('side', 'high');
-		$sidepanel_html .= Navigation::nav('cat', 1);
+		$sidepanel_html .= Navigation::nav('cat', 1,null);
 		//$this->widgets('side', 'low');
 		$sidepanel_html .= $qa_content['sidepanel'];
 		//$this->feed();
