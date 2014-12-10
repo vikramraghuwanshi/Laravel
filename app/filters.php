@@ -88,28 +88,28 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_questions')) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "question",
+				'url' => URL::to("/question"),
 				'label' => "Questions",
 			);
 		}
 
 		if (Setting::qa_opt('nav_hot')){
 			$qa_content['navigation']['main']['hot']=array(
-				'url' => "#",
+				'url' => URL::to("/question/hot"),
 				'label' => "Hot!",
 			);
 		}
 
 		if (Setting::qa_opt('nav_unanswered')){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => "unanswered",
+				'url' => URL::to("/unanswered"),
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos(Setting::qa_opt('tags_or_categories'), 't')!==false) && Setting::qa_opt('nav_tags')){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => "tags",
+				'url' => URL::to("/tags"),
 				'label' => "Tags",
 			);
 		}
@@ -123,14 +123,14 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_users')){
 			$qa_content['navigation']['main']['user']=array(
-				'url' => "user",
+				'url' => URL::to("/user"),
 				'label' => "Users",
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
 		if (Setting::qa_opt('nav_ask')){
 			$qa_content['navigation']['main']['ask']=array(
-				'url' => "ask",
+				'url' => URL::to('/ask'),
 				'label' => "Ask a Question",
 			);
 		}

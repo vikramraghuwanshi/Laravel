@@ -216,45 +216,9 @@ class UserController extends BaseController {
 		}
 	}
 
-	function askQuestion() {
-		$html = '';		
-		return View::make('user.ask')->with('html', $html);
-	}
-
-	function doAskQuestion(){
-		$rules = array(
-			'title'    => 'required', // make sure its required			
-		);
-		$messages = array(
-		'required' => 'Please provide more information - at least 12 characters');
-		//$message = array('title'=> 'Please provide more information - at least 12 characters');
-		// run the validation rules on the inputs from the form
-		$validator = Validator::make(Input::all(), $rules,$messages);
-		if ($validator->fails()) {
-        	Session::flash('message', 'Email/Password can not be blank!');
-			return Redirect::to('ask')
-				->withErrors($validator); 
-		}
-		else {
-			try {
-				//echo Input::get('password');die;
-				//$user = Auth::attempt(array('handle'=>Input::get('emailhandle'), 'password'=>Input::get('password')));
-				//Session::put('user', $user);
-				//die("Logged In");
-                //return Redirect::to('myaccount');
-			}
-			catch (ParseException $error) {
-	            // The login failed. Check error to see why.
-	            //echo "Error: " . $error->getCode() . " " . $error->getMessage();
-	            Session::flash('message', 'Invalid User Information!');
-	            return Redirect::to('ask');
-            }
-		}
-	}
-
 	function doLogout(){
 		 Auth::logout();
-    	return Redirect::route('login');
+    	return Redirect::to('/login');
 	}
 
 }

@@ -5,7 +5,7 @@
 	@if($data==NULL)
 	<h1> No questions found  </h1>
 	@else
-	<h1> Recent questions and answers </h1>
+	<h1> {{{$data[0]['head']}}} </h1>
 	@endif
 
 	<div class="qa-part-q-list">
@@ -35,7 +35,7 @@
 					</div>
 				<div class="qa-q-item-main">
 					<div class="qa-q-item-title">
-						<a href="test/{{{ $record['postid'] }}}">{{{ $record['title'] }}}</a>
+						<a href="question/{{{ $record['postid'] }}}">{{{ $record['title'] }}}</a>
 					</div>
 					<span class="qa-q-item-avatar-meta">
 						<span class="qa-q-item-meta">

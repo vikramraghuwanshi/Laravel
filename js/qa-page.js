@@ -157,8 +157,8 @@ function qa_favorite_click(elem)
 
 function qa_ajax_post(operation, params, callback)
 {
-	jQuery.extend(params, {qa:'ajax', qa_operation:operation, qa_root:qa_root, qa_request:qa_request});
-	
+	//jQuery.extend(params, {qa:'ajax', qa_operation:operation, qa_root:qa_root, qa_request:qa_request});
+	jQuery.extend(params, {qa:'ajax', qa_operation:operation, qa_root:qa_root});
 	jQuery.post(qa_root, params, function(response) {
 		var header='QA_AJAX_RESPONSE';
 		var headerpos=response.indexOf(header);

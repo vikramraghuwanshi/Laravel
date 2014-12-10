@@ -64,6 +64,7 @@ class Navigation {
 			return $html;
 		}
 
+
 		if($navtype=='sub'){ //echo $handle;die;
 			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);		
 			//echo $handle;die;	

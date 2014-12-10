@@ -1,6 +1,5 @@
 @extends('layouts.default')
 @section('content')
-
 <div class="qa-main">
 	<h1> Ask a question </h1>
 	<div class="qa-part-form">
@@ -17,7 +16,7 @@
 					<tr><td class="qa-form-tall-label"> More information for the question: </td></tr>
 					<tr>
 						<td class="qa-form-tall-data">
-							{{ Form::text('content', Input::old('content'), array('placeholder' => 'Content','class'=>'qa-form-tall-text')) }}
+							{{ Form::textarea('content', Input::old('content'), array('placeholder' => 'Content','class'=>'qa-form-tall-text')) }}
 							@if ($errors->has('content')) <div class="qa-form-tall-error">{{ $errors->first('content') }}</div> @endif
 						</td>
 					</tr>

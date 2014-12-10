@@ -49,13 +49,13 @@ return array(
 	"min"              => array(
 		"numeric" => "The :attribute must be at least :min.",
 		"file"    => "The :attribute must be at least :min kilobytes.",
-		"string"  => "The :attribute must be at least :min characters.",
+		"string"  => "Please provide more information - at least 12 characters.",
 		"array"   => "The :attribute must have at least :min items.",
 	),
 	"not_in"           => "The selected :attribute is invalid.",
 	"numeric"          => "The :attribute must be a number.",
 	"regex"            => "The :attribute format is invalid.",
-	"required"         => "The :attribute field is required.",
+	"required"         => "Please provide more information - at least 12 characters.",
 	"required_if"      => "The :attribute field is required when :other is :value.",
 	"required_with"    => "The :attribute field is required when :values is present.",
 	"required_without" => "The :attribute field is required when :values is not present.",
@@ -80,7 +80,12 @@ return array(
 	|
 	*/
 
-	'custom' => array(),
+	'custom' => array(
+		'a_content' => array(
+            'required' => 'Please provide more information - at least 12 characters',
+            'min'      => 'Please provide more information - at least 12 characters',
+        ),
+    ),
 
 	/*
 	|--------------------------------------------------------------------------
