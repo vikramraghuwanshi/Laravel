@@ -126,7 +126,6 @@ function qa_submit_comment(questionid, parentid, elem)
 
 	params.c_questionid=questionid;
 	params.c_parentid=parentid;
-	
 	qa_ajax_post('comment', params,
 		function (lines) {
 

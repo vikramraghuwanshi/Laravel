@@ -96,28 +96,28 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_questions']) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "question",
+				'url' => URL::to("/question"),
 				'label' => "Questions",
 			);
 		}
 
 		if ($settings['nav_hot']){
 			$qa_content['navigation']['main']['hot']=array(
-				'url' => "#",
+				'url' => URL::to("/question/hot"),
 				'label' => "Hot!",
 			);
 		}
 
 		if ($settings['nav_unanswered']){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => "unanswered",
+				'url' => URL::to("/unanswered"),
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos($settings['tags_or_categories'], 't')!==false) && $settings['nav_tags']){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => "tags",
+				'url' => URL::to("/tags"),
 				'label' => "Tags",
 			);
 		}
@@ -131,7 +131,7 @@ App::singleton('qa_content', function(){
 
 		if ($settings['nav_users']){
 			$qa_content['navigation']['main']['user']=array(
-				'url' => "user",
+				'url' => URL::to("/user"),
 				'label' => "Users",
 			);
 		}

@@ -64,20 +64,16 @@ class Navigation {
 			return $html;
 		}
 
-		if($navtype=='sub'){
-			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'profile',true);			
-			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);			
+		if($navtype=='sub'){		
 			$routes = Route::currentRouteName();
 			$routesArray = explode(" ", $routes);
+			$uri = Request::path();
 			if(is_array($routesArray)){
 				if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="profile"){
 					$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);
 				}
-				//if(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
-				//	$navigation=User::qa_qs_sub_navigation(null,array());
-				//}
-
-				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
+				//if(isset($uri) && !empty($uri)&&preg_match('/question/',$uri))
+				elseif(isset($uri) && !empty($uri)&&preg_match('/question/',$uri)){
 					$navigation=Question::qa_qs_sub_navigation(null,array());
 				}
 				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="unanswered"){

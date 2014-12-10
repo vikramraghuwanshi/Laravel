@@ -5,7 +5,7 @@
 	@if($data==NULL)
 	<h1> No questions found  </h1>
 	@else
-	<h1> Recent questions and answers </h1>
+	<h1> {{{$data[0]['head']}}} </h1>
 	@endif
 
 	<div class="qa-part-q-list">

@@ -10,4 +10,8 @@
 <script type="text/javascript" src="/js/wysiwyg-editor/skins/v2/skin.js?t=D03G5XL"></script>
 <script type="text/javascript" src="/js/wysiwyg-editor/lang/en.js?t=D03G5XL"></script>
 <script type="text/javascript" src="/js/wysiwyg-editor/plugins/styles/styles/default.js?t=D03G5XL"></script>
+<script type="text/javascript" src="/js/qa-question.js"></script>
+<script type="text/javascript">
+	var qa_root="{{URL::to('/doComments')}}";
+</script>
 

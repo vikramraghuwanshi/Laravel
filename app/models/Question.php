@@ -33,6 +33,50 @@ class Question extends Eloquent{
 	    return $data;
 	}
 
+	public function getSortedQuestions($sort){
+		if($sort=="hot"){
+			$sorting="hotness";
+			$order="desc";
+			$head="Hot questions";
+		}
+		elseif($sort=="votes"){
+			$sorting="netvotes";
+			$order="desc";
+			$head="Highest voted questions ";
+		}
+		elseif($sort=="answers"){
+			$sorting="acount";
+			$order="desc";
+			$head=" Most answered questions ";
+		}
+		else{
+			$sorting="postid";
+			$order="desc";	
+		}
+		
+		DB::setFetchMode(PDO::FETCH_ASSOC);
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
+	    ->orderBy($sorting, $order)
+	    ->where('type', '=', 'Q')
+	    ->get(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
+	    			));
+	    DB::setFetchMode(PDO::FETCH_CLASS);
+	    $data[0]['head']=$head;
+	    return $data;
+	}
+
 	public function getUnanswered(){
 		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$data = DB::table('posts')
@@ -112,22 +156,22 @@ class Question extends Eloquent{
 		$navigation=array(
 			'recent' => array(
 				'label' => "Recent",
-				'url' => "#",
+				'url' => URL::to("/question"),
 			),
 			
 			'hot' => array(
 				'label' => "Hot!",
-				'url' => "#",
+				'url' => URL::to("/question/sort/hot"),
 			),
 			
 			'votes' => array(
 				'label' => "Most votes",
-				'url' => "#",
+				'url' => URL::to("/question/sort/votes"),
 			),
 
 			'answers' => array(
 				'label' => "Most answers",
-				'url' => "#",
+				'url' => URL::to("/question/sort/answers"),
 			),
 
 			'views' => array(

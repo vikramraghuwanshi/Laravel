@@ -39,6 +39,6 @@ class ProfileController extends BaseController {
 
 	public function account(){
 		$html = '';	
-		return View::make('profile.account')->with('html'=> $html);
+		return View::make('profile.account')->with(array('html'=> $html));
 	}
 }
