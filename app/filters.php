@@ -14,40 +14,34 @@
 App::before(function($request)
 {	//View::share('qa_content', app('qa_content'));
 
-
-});
-
-App::singleton('qa_content', function(){
+	App::singleton('qa_content', function(){
         $settings = array();
-		$options = DB::select('select * from qa_options where 1 = ?', array("1"));
-		foreach ($options as $key => $option) {
-			$settings[$option->title] = $option->content;
-		}
+		
 		// This is for making header.
 		$qa_content = array();
-		$qa_content['settings'] = $settings;
-		$logoshow = $settings['logo_show'];
-		$logourl = $settings['logo_url'];
-		$logowidth = $settings['logo_width'];
-		$logoheight = $settings['logo_height'];
-
+		//$qa_content['settings'] = $settings;
+		$logoshow = Setting::qa_opt('logo_show');		
+		$logourl = Setting::qa_opt('logo_url');
+		$logowidth = Setting::qa_opt('logo_width');
+		$logoheight = Setting::qa_opt('logo_height');
+		//echo Setting::qa_opt('site_title');die("vik007");
 		if ($logoshow){
 			$qa_content['logo']='<a href="/" class="qa-logo-link" title="'.$settings['site_title'].'">'.
 					'<img src="'.(is_numeric(strpos($logourl, '://')) ? $logourl : $logourl).'"'.
 					($logowidth ? (' width="'.$logowidth.'"') : '').($logoheight ? (' height="'.$logoheight.'"') : '').
-					' border="0" alt="'.$settings['site_title'].'"/></a>';
+					' border="0" alt="'.Setting::qa_opt('site_title').'"/></a>';
 		}
 		else {
-			$qa_content['logo']='<a href="/" class="qa-logo-link">'.$settings['site_title'].'</a>';
+			$qa_content['logo']='<a href="/" class="qa-logo-link">'.Setting::qa_opt('site_title').'</a>';
 		}
 
 				
-		$point_options = array('points_post_q', 'points_select_a', 'points_per_q_voted_up', 'points_per_q_voted_down', 'points_q_voted_max_gain', 'points_q_voted_max_loss',
-										'points_post_a', 'points_a_selected', 'points_per_a_voted_up', 'points_per_a_voted_down', 'points_a_voted_max_gain', 'points_a_voted_max_loss',
-										'points_vote_up_q', 'points_vote_down_q', 'points_vote_up_a', 'points_vote_down_a','points_multiple', 'points_base',);
-		foreach ($point_options as $key => $point_option) {
-			$qa_content['bonus_points'][$point_option] = $settings[$point_option];
-		}
+		//$point_options = array('points_post_q', 'points_select_a', 'points_per_q_voted_up', 'points_per_q_voted_down', 'points_q_voted_max_gain', 'points_q_voted_max_loss',
+									//	'points_post_a', 'points_a_selected', 'points_per_a_voted_up', 'points_per_a_voted_down', 'points_a_voted_max_gain', 'points_a_voted_max_loss',
+									//	'points_vote_up_q', 'points_vote_down_q', 'points_vote_up_a', 'points_vote_down_a','points_multiple', 'points_base',);
+		/*foreach ($point_options as $key => $point_option) {
+			$qa_content['bonus_points'][$point_option] = Setting::qa_opt($point_option);
+		}*/
 		 
 		// Search box
 		$qa_content['search']=array(
@@ -57,11 +51,10 @@ App::singleton('qa_content', function(){
 			'field_tags' => 'name="q"',
 			'button_label' => "Search",
 		);
+		$custom_sidebar = str_replace($symbol='^',Setting::qa_opt('site_title'),"Welcome to ^, where you can ask questions and receive answers from other members of the community.");
+		$qa_content['sidebar'] = Setting::qa_opt('show_custom_sidebar') ? $custom_sidebar : null;
 
-		$settings['custom_sidebar'] = str_replace($symbol='^',$settings['site_title'],"Welcome to ^, where you can ask questions and receive answers from other members of the community.");
-		$qa_content['sidebar'] = $settings['show_custom_sidebar'] ? $settings['custom_sidebar'] : null;
-
-		$qa_content['sidepanel'] = $settings['show_custom_sidepanel'] ? $settings['custom_sidepanel'] : null;
+		$qa_content['sidepanel'] = Setting::qa_opt('show_custom_sidepanel') ? Setting::qa_opt('custom_sidepanel') : null;
 
 		//This is for menu.
 		$qa_content['navigation'] = array('user' => array(),
@@ -72,88 +65,93 @@ App::singleton('qa_content', function(){
 											),
 	
 									);
-		if ($settings['nav_home'] && $settings['show_custom_home']){
+		if (Setting::qa_opt('nav_home') && Setting::qa_opt('show_custom_home')){
 			$qa_content['navigation']['main']['$']=array(
 				'url' => "#",
 				'label' => "Home",
 			);
 		}
 
-		if ($settings['nav_activity']){
+		if (Setting::qa_opt('nav_activity')){
 			$qa_content['navigation']['main']['activity']=array(
 				'url' => "#",
 				'label' => "All Activity",
 			);
 		}
 
-		$hascustomhome = $settings['show_custom_home'] || (array_search('', array())!==false);
-		if ($settings[$hascustomhome ? 'nav_qa_not_home' : 'nav_qa_is_home']){
+		$hascustomhome = Setting::qa_opt('show_custom_home') || (array_search('', array())!==false);
+		if (Setting::qa_opt($hascustomhome ? 'nav_qa_not_home' : 'nav_qa_is_home')){
 			$qa_content['navigation']['main'][$hascustomhome ? 'qa' : '$']=array(
 				'url' => ($hascustomhome ? 'qa' : ''),
 				'label' => "Q&A",
 			);
 		}
 
-		if ($settings['nav_questions']) {
+		if (Setting::qa_opt('nav_questions')) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "test",
+				'url' => "question",
 				'label' => "Questions",
 			);
 		}
 
-		if ($settings['nav_hot']){
+		if (Setting::qa_opt('nav_hot')){
 			$qa_content['navigation']['main']['hot']=array(
 				'url' => "#",
 				'label' => "Hot!",
 			);
 		}
 
-		if ($settings['nav_unanswered']){
+		if (Setting::qa_opt('nav_unanswered')){
 			$qa_content['navigation']['main']['unanswered']=array(
 				'url' => "unanswered",
 				'label' => "Unanswered",
 			);
 		}
 			
-		if ((strpos($settings['tags_or_categories'], 't')!==false) && $settings['nav_tags']){
+		if ((strpos(Setting::qa_opt('tags_or_categories'), 't')!==false) && Setting::qa_opt('nav_tags')){
 			$qa_content['navigation']['main']['tag']=array(
 				'url' => "tags",
 				'label' => "Tags",
 			);
 		}
 			
-		if ((strpos($settings['tags_or_categories'], 'c')!==false) && $settings['nav_categories']){
+		if ((strpos(Setting::qa_opt('tags_or_categories'), 'c')!==false) && Setting::qa_opt('nav_categories')){
 			$qa_content['navigation']['main']['categories']=array(
 				'url' => "#",
 				'label' => "Categories",
 			);
 		}
 
-		if ($settings['nav_users']){
+		if (Setting::qa_opt('nav_users')){
 			$qa_content['navigation']['main']['user']=array(
 				'url' => "user",
 				'label' => "Users",
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
-		if ($settings['nav_ask']){
+		if (Setting::qa_opt('nav_ask')){
 			$qa_content['navigation']['main']['ask']=array(
 				'url' => "ask",
 				'label' => "Ask a Question",
 			);
 		}
-		/*if (
-			(qa_get_logged_in_level()>=QA_USER_LEVEL_ADMIN) ||
-			(!qa_user_maximum_permit_error('permit_moderate')) ||
-			(!qa_user_maximum_permit_error('permit_hide_show')) ||
-			(!qa_user_maximum_permit_error('permit_delete_hidden'))
-		)
-			$qa_content['navigation']['main']['admin']=array(
-				'url' => qa_path_html('admin'),
-				'label' => qa_lang_html('main/nav_admin'),
-			);
-		*/
-		if (!$settings['feedback_enabled']){
+		//
+		//echo with(new User)->qa_user_level_string(120);die("vv");
+		if(Auth::check()){
+			//print_r(with(new User)->qa_user_maximum_permit_error('permit_moderate'));die("Vik");
+			if (
+				(Auth::user()->level>=Config::get('constants.QA_USER_LEVEL_ADMIN')) ||
+				(!with(new User)->qa_user_maximum_permit_error('permit_moderate')) ||
+				(!with(new User)->qa_user_maximum_permit_error('permit_hide_show')) ||
+				(!with(new User)->qa_user_maximum_permit_error('permit_delete_hidden'))
+			)
+				$qa_content['navigation']['main']['admin']=array(
+					'url' => 'admin',
+					'label' => 'Admin',
+				);
+		}
+		
+		if (!Setting::qa_opt('feedback_enabled')){
 			unset($qa_content['navigation']['footer']['feedback']);
 		}
 		$navpages = array();
@@ -228,10 +226,13 @@ App::singleton('qa_content', function(){
 				);
 			}
 		}
-
-
 		return $qa_content;
     });
+	$qa_content = App::make('qa_content');
+    View::share('qa_content', $qa_content);
+});
+
+
 
 
 App::after(function($request, $response)

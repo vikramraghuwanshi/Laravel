@@ -56,17 +56,19 @@
 								<span class="qa-form-wide-static"></span>
 							</td>
 						</tr>
+						@if(Auth::check())
 						<tr>
-								<td class="qa-form-wide-buttons" colspan="3">
-									<input type="submit" class="qa-form-wide-button qa-form-wide-button-account" title="" value="Edit my Profile" name="doaccount">
-								</td>
-							</tr>
+							<td class="qa-form-wide-buttons" colspan="3">
+								<input type="submit" class="qa-form-wide-button qa-form-wide-button-account" title="" value="Edit my Profile" name="doaccount">
+							</td>
+						</tr>
+						@endif
 					</tbody>
 				</table>
 		{{ Form::close() }}
 	</div>
 	<div class="qa-part-form-activity">
-					<h2><a name="activity">Activity by {{Auth::user()->handle}}</a></h2>
+					<h2><a name="activity">Activity by {{$handle}}</a></h2>
 					<table class="qa-form-wide-table">
 						<tbody><tr id="points">
 							<td class="qa-form-wide-label">
