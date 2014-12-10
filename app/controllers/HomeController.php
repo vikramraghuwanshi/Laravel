@@ -14,6 +14,16 @@ class HomeController extends BaseController {
 	|	Route::get('/', 'HomeController@showWelcome');
 	|
 	*/
+	protected $questions;
+	protected $answer;
+	protected $comments;
+
+	 public function __construct(){
+	 	//Declaring objects of Question and Answer Model
+	 	$this->questions=new Question;
+		$this->answer=new Answer;
+		$this->comments=new Comments;
+	 }
 
 	public function showWelcome()
 	{
@@ -23,14 +33,13 @@ class HomeController extends BaseController {
 	public function index(){
 		//Taking parameter to sort accordingly
 		$params = App::make('router')->getCurrentRoute()->getParameters();
-		$questions=new Question;
 
 		//If there is anything for sorting
 		if(isset($params['sort'])){
-			$data=$questions->getSortedQuestions($params['sort']);
+			$data=$this->questions->getSortedQuestions($params['sort']);
 		}
 		else{
-			$data=$questions->getQuestions();
+			$data=$this->questions->getQuestions();
 			$data[0]['head']="Recent questions and answers";
 			//echo "<pre>";print_r($data);die;
 		}
@@ -38,30 +47,43 @@ class HomeController extends BaseController {
 	}
 
 	public function showUnanswerQuestion(){
-		$questions=new Question;
-		$data=$questions->getUnanswered();
+		//$questions=new Question;
+		$data=$this->questions->getUnanswered();
 		$data[0]['head']="Recent questions without answers";
 		return View::make('front.index')->with('data', $data);
 	}
 
 	public function showTags(){
-		$questions=new Question;
-		$data=$questions->getTags();
+		//$questions=new Question;
+		$data=$this->questions->getTags();
 		return View::make('front.tags')->with('data', $data);
 	}
 
 	public function showSingleQuestion($qa){
-		$questions=new Question;
-		$answer=new Answer;
-		$data['answers']=$answer->getAnswer($qa);
-		$data['question']=$questions->getSingleQuestion($qa);
+		$data['answers']=$this->answer->getAnswer($qa);
+		$data['question']=$this->questions->getSingleQuestion($qa);
+		
+		//Getting comments for each section
+		foreach ($data['answers'] as $record) {
+			$comments=$this->comments->getCommentsByParentId($record['postid']);
+			$data['comments'][$record['postid']]=$comments;
+		}
+		//$data['comments']=;
 		$view=View::make('front.single_question')->with('data', $data);
 		return $view;
 	}
 
 	function askQuestion() {
-		$html = '';		
-		return View::make('user.ask')->with('html', $html);
+		//Taking parameter if there is asking related question
+		$params = App::make('router')->getCurrentRoute()->getParameters();
+		$data = [];
+		if(isset($params['follow'])){
+			$data['follow']=$params['follow'];//parent post id
+			$post=$this->questions->getPostById($data['follow']);
+			$data['content']=$post['content'];
+			$data['postid']=$post['postid'];
+		}
+		return View::make('user.ask')->with('data', $data);
 	}
 
 	function doAskQuestion(){
@@ -69,7 +91,7 @@ class HomeController extends BaseController {
 			'title'    => 'required|min:12', // make sure its required and min length of 12
 		);
 		
-		// run the validation rules on the inputs from the form
+		// Run the validation rules on the inputs from the form
 		$validator = Validator::make(Input::all(), $rules);
 		if ($validator->fails()) {
 			return Redirect::to('/ask')
@@ -88,6 +110,11 @@ class HomeController extends BaseController {
 					$email=Input::get('email');
 				else
 					$email=NULL;
+
+				if(Input::get('parentid'))
+					$parentid=Input::get('parentid');
+				else
+					$parentid=NULL;
 				
 				$postid = DB::table('posts')->insertGetId(
 				    array('type' => 'Q',
@@ -98,7 +125,8 @@ class HomeController extends BaseController {
 		    	 		 'content' => Input::get('content'),
 		    	 		 'name' => Input::get('name'),
 		    	 		 'tags' => Input::get('tags'),
-		    	 		 'userid' => $userid,	    	 		
+		    	 		 'userid' => $userid,
+		    	 		 'parentid' => $parentid,	    	 		
 			    	 	 'notify' => $email)
 				);
 

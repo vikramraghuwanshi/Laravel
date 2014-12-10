@@ -180,16 +180,7 @@ class Question extends Eloquent{
 			),
 		);
 		
-		/*if (isset($navigation[$sort])){
-			$navigation[$sort]['selected']=true;
-		}
-		else{
-			$navigation['recent']['selected']=true;
-		}
 		
-		if (!qa_opt('do_count_q_views')){
-			unset($navigation['views']);
-		}*/
 		return $navigation;
 	}
 
@@ -219,17 +210,18 @@ class Question extends Eloquent{
 			),
 		);
 		
-		/*if (isset($navigation['by-'.$by])){
-			$navigation['by-'.$by]['selected']=true;
-		}
-		else{
-			$navigation['by-answers']['selected']=true;
-		}
-			
-		if (!qa_opt('voting_on_as')){
-			unset($navigation['by-upvotes']);
-		}*/
+		
 		return $navigation;
+	}
+
+	//Getting post by its id
+	public function getPostById($id){
+		DB::setFetchMode(PDO::FETCH_ASSOC);
+		$record=DB::table('posts')
+            ->where('postid', $id)
+            ->get();
+        DB::setFetchMode(PDO::FETCH_CLASS);
+        return $record[0];
 	}
 
 }

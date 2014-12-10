@@ -6,6 +6,18 @@
 		{{ Form::open(array('url' => 'doAskQuestion')) }}
 			<table class="qa-form-tall-table">
 				<tbody>
+				@if(isset($data['follow']))
+					<tr>
+						<td class="qa-form-tall-label">Your question will be related to this answer:
+						</td>
+					</tr>
+					<tr>
+						<td class="qa-form-tall-data">
+							{{ Form::hidden('parentid', $data['postid']) }}
+							<span class="qa-form-tall-static">{{$data['content']}}</span>
+						</td>
+					</tr>
+				@endif
 					<tr><td class="qa-form-tall-label">The question in one sentence:</td></tr>
 					<tr>
 						<td class="qa-form-tall-data">

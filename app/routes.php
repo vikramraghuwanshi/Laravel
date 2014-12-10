@@ -25,6 +25,8 @@ Route::get('question/{qa}', array( 'uses' => 'HomeController@showSingleQuestion'
 Route::get('question/sort/{sort}', array ('as' => 'sort' ,'uses' => 'HomeController@index'))->where('qa', '[a-z]+');
 //Page for asking question
 Route::get('ask', array('uses' => 'HomeController@askQuestion'));
+//Route for asking related question
+Route::get('ask/follow/{follow}', array('uses' => 'HomeController@askQuestion'));
 //Action to perform ask question
 Route::post('doAskQuestion', array('uses' => 'HomeController@doAskQuestion'));
 

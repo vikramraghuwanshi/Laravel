@@ -42,7 +42,7 @@
 							</span>
 							<span class="qa-q-view-who">
 								<span class="qa-q-view-who-pad">by </span>
-								<span class="qa-q-view-who-data"><span class="vcard author"><a class="qa-user-link url nickname" href="./index.php?qa=user&amp;qa_1=akash">akash</a></span></span>
+								<span class="qa-q-view-who-data">{{{$data['question']['handle']}}}</span>
 								<span class="qa-q-view-who-points">
 									<span class="qa-q-view-who-points-pad">(</span><span class="qa-q-view-who-points-data">290</span><span class="qa-q-view-who-points-pad"> points)</span>
 								</span>
@@ -172,12 +172,48 @@
 						<div class="qa-a-item-buttons">
 							<input type="submit" class="qa-form-light-button qa-form-light-button-edit" title="Edit this answer" value="edit" name="a12_doedit">
 							<input type="submit" class="qa-form-light-button qa-form-light-button-hide" title="Hide this answer" value="hide" onclick="return qa_answer_click(12, 11, this);" name="a12_dohide">
-							<input type="submit" class="qa-form-light-button qa-form-light-button-follow" title="Ask a new question relating to this answer" value="ask related question" name="a12_dofollow">
+							<a href="{{URL::to('/ask/follow/'.$ans)}}" class="qa-form-light-button qa-form-light-button-follow" title="Ask a new question relating to this answer" name="related_question">ask related question</a>
 							<input type="submit" class="qa-form-light-button qa-form-light-button-comment" title="Add a comment on this answer" value="comment" onclick="return qa_toggle_element('c{{$ans}}')" name="a12_docomment">
 						</div>
 						
-						<div id="c12_list" style="display:none;" class="qa-a-item-c-list">
-						</div> <!-- END qa-c-list -->
+						@foreach($data['comments'][$record['postid']] as $record_comments)
+						<!--Comment Section Start-->
+						<div id="c12_list" class="qa-a-item-c-list">
+							<div class="qa-c-list-item  hentry comment" id="c38">
+								<div class="qa-c-item-content">
+									<a name="38"></a><div class="entry-content">{{$record_comments['content']}}</div>
+								</div>
+								
+								<div class="qa-c-item-footer">
+									<span class="qa-c-item-avatar-meta">
+										<span class="qa-c-item-meta">
+											<span style="color:blue;">commented</span>
+											<span class="qa-c-item-when">
+												<span class="qa-c-item-when-data"><span class="published"><span class="value-title" title="2014-12-09T15:19:12+0000"></span>{{ Question::formattedCreatedDate($record_comments['created']) }}</span></span>
+											</span>
+											<span class="qa-c-item-who">
+												<span class="qa-c-item-who-pad">by </span>
+												<span class="qa-c-item-who-data">
+													@if($record['handle']==NULL)
+														me
+													@else
+														<a class="qa-user-link" href="">{{{ $record['handle'] }}}</a>
+													@endif
+												</span>
+											</span>
+										</span>
+									</span>
+									<div class="qa-c-item-buttons">
+										<input name="c38_doflag" onclick="return qa_comment_click(38, 11, 12, this);" value="flag" title="Flag this comment as spam or inappropriate" type="submit" class="qa-form-light-button qa-form-light-button-flag">
+										<input name="a12_docomment" onclick="return qa_toggle_element('c12')" value="reply" title="Reply to this comment" type="submit" class="qa-form-light-button qa-form-light-button-comment">
+									</div>
+								</div>
+								<div class="qa-c-item-clear">
+								</div>
+							</div>
+						</div> 
+						<!--Comment Section End-->
+						@endforeach
 						
 						<input type="hidden" value="0-1417774325-d11ee3d5b335bcf1ad1234f07222196aaf9c6c89" name="code">
 						<input type="hidden" value="" name="qa_click">

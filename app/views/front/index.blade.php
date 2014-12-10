@@ -1,13 +1,11 @@
 @extends('layouts.default')
 @section('content')
 <div class="qa-main">
-	
 	@if($data==NULL)
 	<h1> No questions found  </h1>
 	@else
 	<h1> {{{$data[0]['head']}}} </h1>
 	@endif
-
 	<div class="qa-part-q-list">
 		<form action="index.php" method="post">
 			<div class="qa-q-list">
@@ -49,7 +47,7 @@
 									@if($record['handle']==NULL)
 										me
 									@else
-										<a class="qa-user-link" href="./index.php?qa=user&amp;qa_1=akash">{{{ $record['handle'] }}}</a>
+										<a class="qa-user-link" href="">{{{ $record['handle'] }}}</a>
 									@endif
 								</span>
 								<span class="qa-q-item-who-points">
