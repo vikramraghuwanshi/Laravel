@@ -1,5 +1,5 @@
 <div class="qa-footer">
-{{Navigation::nav("footer")}}
+{{Navigation::nav("footer",null,null)}}
 
 <div class="qa-attribution">
 	&nbsp;| Snow Theme by <a href="/">Demo</a>

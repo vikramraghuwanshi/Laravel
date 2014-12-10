@@ -62,8 +62,7 @@ App::before(function($request)
 											'footer' => array('feedback' => array('url' => "",
 															'label' => "Send feedback",
 														),
-											),
-	
+											),	
 									);
 		if (Setting::qa_opt('nav_home') && Setting::qa_opt('show_custom_home')){
 			$qa_content['navigation']['main']['$']=array(
