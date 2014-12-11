@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="qa-main">
-	<h1>Administration center - General  </h1>
+	<h1> Administration center - Spam  </h1>
 	<div class="qa-part-ranking">
 		<table class="qa-top-users-table">
 			{{$html}}

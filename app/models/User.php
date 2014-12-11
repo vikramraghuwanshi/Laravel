@@ -204,57 +204,57 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if ($level>=Config::get('constants.QA_USER_LEVEL_ADMIN')) {
 			$navigation['admin/general']=array(
 				'label' => "General",
-				'url' => 'admin/general',
+				'url' => '/admin/general',
 			);			
 			$navigation['admin/emails']=array(
 				'label' => "Emails",
-				'url' => 'admin/emails',
+				'url' => '/admin/emails',
 			);			
 			$navigation['admin/user']=array(
-				'label' => 'Approve users',
-				'url' => 'admin/users',
+				'label' => 'Users',
+				'url' => '/admin/users',
 			);			
 			$navigation['admin/posting']=array(
 				'label' => 'Posting',
-				'url' => 'admin/posting',
+				'url' => '/admin/posting',
 			);			
 			$navigation['admin/viewing']=array(
 				'label' => 'Viewing',
-				'url' => 'admin/viewing',
+				'url' => '/admin/viewing',
 			);
 			
 			$navigation['admin/lists']=array(
 				'label' => 'Lists',
-				'url' => 'admin/lists',
+				'url' => '/admin/lists',
 			);			
 			if (User::qa_using_categories()){
 				$navigation['admin/categories']=array(
 					'label' => 'Categories',
-					'url' => 'admin/categories',
+					'url' => '/admin/categories',
 				);
 			}			
 			$navigation['admin/permissions']=array(
 				'label' => 'Permissions',
-				'url' => 'admin/permissions',
+				'url' => '/admin/permissions',
 			);			
 			$navigation['admin/pages']=array(
 				'label' => 'Pages',
-				'url' => 'admin/pages',
+				'url' => '/admin/pages',
 			);			
 			$navigation['admin/points']=array(
 				'label' => 'Points',
-				'url' => 'admin/points',
+				'url' => '/admin/points',
 			);			
 			$navigation['admin/spam']=array(
 				'label' => 'Spam',
-				'url' => 'admin/spam',
+				'url' => '/admin/spam',
 			);			
 		}
 		if (!User::qa_user_maximum_permit_error('permit_moderate')) {			
 			$count=User::qa_user_permit_error('permit_moderate') ? null : Setting::qa_opt('cache_queuedcount'); // if only in some categories don't show cached count
 			$navigation['admin/moderate']=array(
 				'label' => "Moderate".($count ? (' ('.$count.')') : ''),
-				'url' => 'admin/moderate',
+				'url' => '/admin/moderate',
 			);
 		}
 		if (Setting::qa_opt('flagging_of_posts') && !User::qa_user_maximum_permit_error('permit_hide_show')) {
@@ -262,13 +262,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 			
 			$navigation['admin/flagged']=array(
 				'label' => "Flagged".($count ? (' ('.$count.')') : ''),
-				'url' => 'admin/flagged',
+				'url' => '/admin/flagged',
 			);
 		}
 		if ((!User::qa_user_maximum_permit_error('permit_hide_show')) || (!User::qa_user_maximum_permit_error('permit_delete_hidden'))){
 			$navigation['admin/hidden']=array(
 				'label' => 'Hidden',
-				'url' => 'admin/hidden',
+				'url' => '/admin/hidden',
 			);
 		}
 		return $navigation;

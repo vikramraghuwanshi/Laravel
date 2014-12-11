@@ -70,9 +70,9 @@ class Navigation {
 			$routes = Route::currentRouteName();
 			$routesArray = explode(" ", $routes);
 			$tmpRoutesArray = array(); 
-			if(is_array($routesArray)){							
+			if(is_array($routesArray)){									
 				$profile_routes = array('account','profile','favorites','wall','activity','questions','answers','profile/{handle}');
-				$admin_routes = array('admin');
+				$admin_routes = array('admin/general','admin/emails','admin/users','admin/posting','admin/viewing','admin/lists','admin/categories','admin/permissions','admin/pages','admin/points','admin/spam','admin/moderate','admin/flagged','admin/hidden');
 				if(isset($routesArray[1]) && !empty($routesArray[1])&& in_array($routesArray[1],$profile_routes )){
 					$navigation=User::qa_user_sub_navigation($handle, 'profile',true);
 					//echo "<pre>"; print_r($navigation);die;

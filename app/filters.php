@@ -89,7 +89,7 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_questions')) {
 			$qa_content['navigation']['main']['questions']=array(
-				'url' => "question",
+				'url' => "/question",
 				'label' => "Questions",
 			);
 		}
@@ -103,14 +103,14 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_unanswered')){
 			$qa_content['navigation']['main']['unanswered']=array(
-				'url' => "unanswered",
+				'url' => "/unanswered",
 				'label' => "Unanswered",
 			);
 		}
 			
 		if ((strpos(Setting::qa_opt('tags_or_categories'), 't')!==false) && Setting::qa_opt('nav_tags')){
 			$qa_content['navigation']['main']['tag']=array(
-				'url' => "tags",
+				'url' => "/tags",
 				'label' => "Tags",
 			);
 		}
@@ -124,14 +124,14 @@ App::before(function($request)
 
 		if (Setting::qa_opt('nav_users')){
 			$qa_content['navigation']['main']['user']=array(
-				'url' => "user",
+				'url' => "/user",
 				'label' => "Users",
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
 		if (Setting::qa_opt('nav_ask')){
 			$qa_content['navigation']['main']['ask']=array(
-				'url' => "ask",
+				'url' => "/ask",
 				'label' => "Ask a Question",
 			);
 		}		
@@ -143,7 +143,7 @@ App::before(function($request)
 				(!User::qa_user_maximum_permit_error('permit_delete_hidden'))
 			)
 			$qa_content['navigation']['main']['admin']=array(
-				'url' => 'admin',
+				'url' => '/admin/general',
 				'label' => 'Admin',
 			);
 		}
