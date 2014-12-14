@@ -7,19 +7,25 @@
 	<h1> {{{$data[0]['head']}}} </h1>
 	@endif
 	<div class="qa-part-q-list">
-		<form action="index.php" method="post">
+		
 			<div class="qa-q-list">
+			@if(isset($data[0]['netvotes']))
 			@foreach($data as $record)
-				<div id="q6" class="qa-q-list-item">
+			{{ Form::open(array('url' => URL::to('/votes'))) }}
+			{{ Form::hidden('current_url',Request::url()) }}
+			{{ Form::hidden('postid',$record['postid']) }}
+			@if (Session::has('logintovote') && Session::get('logintovote')==$record['postid'])
+			<div id="errorbox" class="qa-error" style="">Please <a href="{{URL::to('/login')}}">log in</a> or <a href="{{URL::to('/register')}}">register</a> to vote.</div>
+			@else
+			<div id="errorbox" class="qa-error" style="display:none">Please <a href="">log in</a> or <a href="">register</a> to vote.</div>
+			@endif	
+				<div id="q{{$record['postid']}}" class="qa-q-list-item">
 					<div class="qa-q-item-stats">
 						<div id="voting_6" class="qa-voting qa-voting-net">
-							<div class="qa-vote-buttons qa-vote-buttons-net">
-								<input type="submit" disabled="disabled" class="qa-vote-first-button qa-vote-up-disabled" value="" title="You cannot vote on your own questions"> 
-								<input type="submit" disabled="disabled" class="qa-vote-second-button qa-vote-down-disabled" value="" title="You cannot vote on your own questions"> 
-							</div>
+							{{Votes::vote_buttons(with(new VotesModel)->getVotes($record))}}
 							<div class="qa-vote-count qa-vote-count-net">
 								<span class="qa-netvote-count">
-									<span class="qa-netvote-count-data">{{{$record['netvotes']}}}</span>
+									<span class="qa-netvote-count-data">{{$record['netvotes']}}</span>
 									<span class="qa-netvote-count-pad"> votes</span>
 								</span>
 							</div>
@@ -63,7 +69,7 @@
 					@if($record['tags']!=NULL)
 					<div class="qa-q-item-tags">
 						<ul class="qa-q-item-tag-list">
-							<li class="qa-q-item-tag-item"><a class="qa-tag-link" href="./index.php?qa=tag&amp;qa_1=first-second-third">{{{ $record['tags'] }}}</a></li>
+							<li class="qa-q-item-tag-item"><a class="qa-tag-link" href="{{URL::to('/tag/'.$record['tags'])}}">{{{ $record['tags'] }}}</a></li>
 						</ul>
 					</div>
 					@endif
@@ -71,13 +77,16 @@
 					<div class="qa-q-item-clear">
 					</div>
 				</div>
+			{{ Form::close() }}
 			@endforeach
 
 				<div class="qa-suggest-next">
 						Help get things started by <a href="./index.php?qa=ask">asking a question</a>.
 				</div>
+			@endif
 			</div>
-		</form>
+		
 	</div>
+	
 </div>
 @stop

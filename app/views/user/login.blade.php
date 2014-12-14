@@ -12,6 +12,13 @@
 {{ Form::open(array('url' => 'doLogin')) }}
 <table class="qa-form-tall-table">
 	<tbody>
+	@if(Session::get('error'))
+		<tr>
+			<td class="qa-form-wide-error" colspan="3">
+				{{Session::get('error')}}
+			</td>
+		</tr>
+	@endif
 		<tr><td class="qa-form-tall-label">{{$label}}</td></tr>
 		<tr>
 			<td class="qa-form-tall-data">

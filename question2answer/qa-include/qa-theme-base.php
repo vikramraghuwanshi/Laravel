@@ -1496,7 +1496,7 @@
 		}
 		
 		function voting($post)
-		{
+		{//echo "<pre>";print_r($post);die;
 			if (isset($post['vote_view'])) {
 				$this->output('<div class="qa-voting '.(($post['vote_view']=='updown') ? 'qa-voting-updown' : 'qa-voting-net').'" '.@$post['vote_tags'].'>');
 				$this->voting_inner_html($post);
@@ -1512,7 +1512,7 @@
 		}
 		
 		function vote_buttons($post)
-		{
+		{//echo "<pre>";print_r($post);die;
 			$this->output('<div class="qa-vote-buttons '.(($post['vote_view']=='updown') ? 'qa-vote-buttons-updown' : 'qa-vote-buttons-net').'">');
 
 			switch (@$post['vote_state'])

@@ -144,7 +144,7 @@
 									</td>
 									<td class="qa-form-wide-data">
 									<!--	<input type="password" class="qa-form-wide-text" value="" name="oldpassword">-->
-										{{ Form::password('oldpassword',array('placeholder' => 'Old Password','class'=>'qa-form-wide-text')) }}
+										{{ Form::password('oldpassword',array('class'=>'qa-form-wide-text')) }}
 										@if ($errors->has('oldpassword')) <div class="qa-form-tall-error">{{ $errors->first('oldpassword') }}</div> @endif
 									</td>
 								</tr>

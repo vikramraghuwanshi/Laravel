@@ -224,4 +224,56 @@ class Question extends Eloquent{
         return $record[0];
 	}
 
+	public function getSearchQuestions($qa){//echo $qa;die;
+		//$categoryids="CONCAT_WS(',', ^posts.catidpath1, ^posts.catidpath2, ^posts.catidpath3, ^posts.categoryid)";
+		DB::setFetchMode(PDO::FETCH_ASSOC);
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
+	    ->orderBy('postid', 'desc')
+	    ->where('type', '=', 'Q')
+	    ->where('posts.content', 'LIKE', '%' . $qa . '%')
+	    ->orWhere('posts.title', 'LIKE', '%' . $qa . '%')
+	    ->orWhere('posts.tags', 'LIKE','%'. $qa . '%')
+	    ->get(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
+	    			));
+	    DB::setFetchMode(PDO::FETCH_CLASS);
+	    return $data;
+	}
+
+	public function SearchQuestionsByTag($tag){
+		//$categoryids="CONCAT_WS(',', ^posts.catidpath1, ^posts.catidpath2, ^posts.catidpath3, ^posts.categoryid)";
+		DB::setFetchMode(PDO::FETCH_ASSOC);
+		$data = DB::table('posts')
+	    ->leftjoin('users', 'users.userid', '=', 'posts.userid')
+	    ->leftjoin('userpoints', 'userpoints.userid', '=', 'posts.userid')
+	    ->leftjoin('categories', 'categories.categoryid', '=', 'posts.categoryid')
+	    ->orderBy('postid', 'desc')
+	    ->where('type', '=', 'Q')
+	    ->where('posts.tags', '=', $tag)
+	    ->get(array('posts.*', 'categories.title as categoryname', 
+	    			'categories.backpath as categorybackpath',
+	    			'userpoints.points',
+	    			'users.flags',
+	    			'users.level',
+	    			'users.email',
+	    			'users.handle',
+	    			'users.avatarblobid',
+	    			'users.avatarwidth',
+	    			'users.avatarheight'
+	    			));
+	    DB::setFetchMode(PDO::FETCH_CLASS);
+	    return $data;
+	}
+
 }

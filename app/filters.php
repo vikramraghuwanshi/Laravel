@@ -45,7 +45,7 @@ App::before(function($request)
 		 
 		// Search box
 		$qa_content['search']=array(
-			'form_tags' => 'method="get" action="/search"',
+			'form_tags' => 'method="post" action="/search"',
 			'form_extra' => "",
 			'title' => "Search results",
 			'field_tags' => 'name="q"',
@@ -129,6 +129,7 @@ App::before(function($request)
 			);
 		}
 		//&& (qa_user_maximum_permit_error('permit_post_q')!='level')
+		//echo "<pre>";print_r(Setting::qa_opt('nav_ask'));die(' jreal');
 		if (Setting::qa_opt('nav_ask')){
 			$qa_content['navigation']['main']['ask']=array(
 				'url' => "/ask",
@@ -200,18 +201,18 @@ App::before(function($request)
 						);
 		if(Auth::check()){
 			$qa_content['navigation']['user']['login']= array(
-				'url' => 'updates',
+				'url' => '/updates',
 				'label' => "My Updates",
 			);
 			$qa_content['navigation']['user']['logout']=array(
-					'url' => 'logout',
+					'url' => '/logout',
 					'label' => "Logout",
 			);
 		}
 		else {
 			if (!empty($userlinks['login'])){
 				$qa_content['navigation']['user']['login']=array(
-					'url' => "login",
+					'url' => "/login",
 					'label' => "Login",
 				);
 			}

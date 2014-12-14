@@ -115,6 +115,11 @@ class HomeController extends BaseController {
 					$parentid=Input::get('parentid');
 				else
 					$parentid=NULL;
+
+				//$request = Request::instance();
+				//$request->setTrustedProxies(array('127.0.0.1')); // only trust proxy headers coming from the IP addresses on the array (change this to suit your needs)
+				//$ip = $request->getClientIp();
+				//echo $ip;die;
 				
 				$postid = DB::table('posts')->insertGetId(
 				    array('type' => 'Q',
@@ -142,4 +147,27 @@ class HomeController extends BaseController {
 		}
 	}
 
+	public function doSearch(){//echo "<pre>";print_r(Input::all());die;
+		$data=$this->questions->getSearchQuestions(Input::get('q'));
+		if(empty($data))
+			$data[0]['head']="No results found for ".Input::get('q')."";
+		else
+			$data[0]['head']="Search results for ".Input::get('q')."";
+		//echo "<pre>";print_r($data);die;
+		return View::make('front.index')->with('data', $data);
+	}
+
+	public function doTag(){
+		//Taking parameter if there is asking related question
+		$params = App::make('router')->getCurrentRoute()->getParameters();
+		$data = [];
+		//echo $params['tag'];die;
+		$data=$this->questions->SearchQuestionsByTag($params['tag']);
+		if(empty($data))
+			$data[0]['head']="No results found for tag ".$params['tag']."";
+		else
+			$data[0]['head']="Recent questions tagged tag ".$params['tag']."";
+		//echo "<pre>";print_r($data);die;
+		return View::make('front.index')->with('data', $data);
+	}
 }

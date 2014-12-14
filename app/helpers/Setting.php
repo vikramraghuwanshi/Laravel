@@ -49,7 +49,9 @@ class Setting {
 
 		if (Cache::has('qa_settings')){ 
 			$qa_options_cache = Cache::get('qa_settings');
+			//echo "<pre>";print_r($qa_options_cache);die;
 		}
+
 		//echo "<pre>"; print_r($qa_options_cache);die("vik");
 		foreach ($names as $name) {
 			if (!isset($qa_options_cache[$name])) {

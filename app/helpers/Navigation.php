@@ -65,22 +65,22 @@ class Navigation {
 		}
 
 		if($navtype=='sub'){ //echo $handle;die;
-			//$navigation=User::qa_user_sub_navigation(Auth::user()->handle, 'questions',true);		
-			//echo $handle;die;	
 			$routes = Route::currentRouteName();
 			$routesArray = explode(" ", $routes);
-			$tmpRoutesArray = array(); 
-			if(is_array($routesArray)){									
+			$tmpRoutesArray = array();
+			$uri = Request::path(); 
+			if(is_array($routesArray)){	
+			//echo "<pre>"; print_r($routesArray);die;								
 				$profile_routes = array('account','profile','favorites','wall','activity','questions','answers','profile/{handle}');
 				$admin_routes = array('admin/general','admin/emails','admin/users','admin/posting','admin/viewing','admin/lists','admin/categories','admin/permissions','admin/pages','admin/points','admin/spam','admin/moderate','admin/flagged','admin/hidden');
+				$question_routes = array('question','sort/hot');
 				if(isset($routesArray[1]) && !empty($routesArray[1])&& in_array($routesArray[1],$profile_routes )){
 					$navigation=User::qa_user_sub_navigation($handle, 'profile',true);
 					//echo "<pre>"; print_r($navigation);die;
 					//$navigation[$routesArray[1]]['selected'] = 1;
 				}
-				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="question"){
+				elseif(isset($uri) && !empty($uri) && preg_match('/question/',$uri)){
 					$navigation=Question::qa_qs_sub_navigation(null,array());
-					//$navigation[$routesArray[1]]['selected'] = 1;
 				}
 				elseif(isset($routesArray[1]) && !empty($routesArray[1])&&$routesArray[1]=="unanswered"){
 					$navigation=Question::qa_unanswered_sub_navigation(null,array());
@@ -100,10 +100,9 @@ class Navigation {
 				if(Auth::check()){
 					$html .= '<div class="qa-logged-in">';
 					$html .= '<span class="qa-logged-in-pad">Hello </span>';
-					$html .= '<span class="qa-logged-in-data"><a class="qa-user-link" href="profile">'.Auth::user()->handle.'</a></span></div>';
+					$html .= '<span class="qa-logged-in-data"><a class="qa-user-link" href="/profile">'.Auth::user()->handle.'</a></span></div>';
 				}
 			}
-				
 				
 			// reverse order of 'opposite' items since they float right
 			foreach (array_reverse($navigation, true) as $key => $navlink){
@@ -157,6 +156,7 @@ class Navigation {
 	public static function header($handle=null) { //echo $handle;die;
 		$header_html = "";
 		$qa_content = app('qa_content');
+		//echo "<pre>";print_r($qa_content);die;
 
 		// Logo html section.
 		$header_html .= '<div class="qa-logo">';

@@ -7,6 +7,7 @@
 	| All Comments related Queries are to be there in this model. 
 */
 class Comments extends Eloquent{
+	
 	public function getCommentsByParentId($id){
 		DB::setFetchMode(PDO::FETCH_ASSOC);
 			$records=DB::table('posts')
@@ -17,4 +18,5 @@ class Comments extends Eloquent{
         DB::setFetchMode(PDO::FETCH_CLASS);
       	return $records;
 	}
+
 }

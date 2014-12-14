@@ -78,11 +78,14 @@ class UserController extends BaseController {
 					return Redirect::to('user');
                 	
                 }               
+			else {
+                	Session::flash('error', 'Invalid Login Information!');
+                	return Redirect::to('login');
+                }            
 			}
 			catch (ParseException $error) {
-	            // The login failed. Check error to see why.
-	            //echo "Error: " . $error->getCode() . " " . $error->getMessage();
-	            Session::flash('message', 'Invalid Login Information!');
+	            // The login failed. Check error to see why.	            
+	            Session::flash('error', 'Invalid Login Information!');
 	            return Redirect::to('login');
             }
 		}
@@ -111,7 +114,7 @@ class UserController extends BaseController {
 			try {			
 				
 				$qa_content = app('qa_content');				
-				$options = $qa_content['bonus_points'];
+				/*$options = $qa_content['bonus_points'];
 				$point_calculations = array(
 								'qposts' => array(
 									'multiple' => $options['points_multiple']*$options['points_post_q'],
@@ -185,9 +188,9 @@ class UserController extends BaseController {
 									'multiple' => 0,
 									'formula' => "COALESCE(SUM(downvotes), 0) AS downvoteds FROM ^posts AS userid_src WHERE userid~",
 								),
-							);		
+							);*/		
 				
-
+							
 				$userId = DB::table('users')->insertGetId(
 				    array('email' => Input::get('email'),
 				    	 'passcheck' => Hash::make(Input::get('password')),
@@ -202,9 +205,20 @@ class UserController extends BaseController {
 				);
 				DB::table('userpoints')->insertGetId(
 				    array('userid' => $userId,
-				    	 'points' => $options['points_base'],
+				    	 'points' => 100,
 		    	 		)
-				);			
+				);	
+
+				$user = array(
+						  'username' => Input::get('handle'),
+						  'password' => Input::get('password')
+						);
+				if (Auth::attempt($user)) {
+					//Session::put('user', $user);
+					Auth::login(Auth::user(), true);
+					return Redirect::to('user');               	
+                }
+
                 return Redirect::to('register');
 			}
 			catch (ParseException $error) {

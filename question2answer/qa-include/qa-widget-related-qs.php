@@ -102,7 +102,7 @@
 				
 				$defaults=qa_post_html_defaults('Q');
 				$usershtml=qa_userids_handles_html($questions);
-				
+				//echo "<pre>";print_r($questions);die(' rerall');
 				foreach ($questions as $question)
 					$q_list['qs'][]=qa_post_html_fields($question, $userid, $cookieid, $usershtml, null, qa_post_html_options($question, $defaults));
 

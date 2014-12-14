@@ -62,7 +62,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	public function qa_get_one_user_html($handle, $microformats=false, $favorited=false){ 
-		return strlen($handle) ? ('<a href="profile/'.$handle.'" class="qa-user-link'
+		return strlen($handle) ? ('<a href="/profile/'.$handle.'" class="qa-user-link'
 				.($favorited ? ' qa-user-favorited' : '').($microformats ? ' url nickname' : '').'">'.($handle).'</a>') : '';
 	}
 
@@ -105,7 +105,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	public static function qa_user_sub_navigation($handle, $selected, $ismyuser=false){		
-		$navigation['profile'] =  array('label' => 'User '.$handle,	'url' => 'profile');
+		$navigation['profile'] =  array('label' => 'User '.$handle,	'url' => '/profile');
 		if(Auth::check()){
 			$navigation['account'] = array('label' => "My Account",'url' => "account");
 			$navigation['favorites'] = array('label' => "My favorites",	'url' => "favorites");

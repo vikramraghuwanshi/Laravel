@@ -11,8 +11,7 @@ class ProfileController extends BaseController {
 	| based routes. That's great! Here is an example controller method to
 	| get you started. To route to this controller, just add the route:
 	|
-	|	Route::get('/', 'HomeController@showWelcome');
-	|
+	|	
 	*/	
 	 /**
      * Instantiate a new UserController instance.
@@ -120,21 +119,21 @@ class ProfileController extends BaseController {
 		$validator = Validator::make(Input::all(), $rules);
 		if ($validator->fails()) {
         	Session::flash('message', 'Email/Password can not be blank!');
-			return Redirect::to('account')
+			return Redirect::to('/account')
 				->withErrors($validator) // send back all errors to the login form
 				->withInput(Input::except('oldpassword')); // send back the input (not the password) so that we can repopulate the form
 		}
 		else {
-			try{
+			try{die(' else');
 				with(new Profile)->insertProfileById();
 				Session::flash('message', 'Profile Saved');
-				return Redirect::to('account');
+				return Redirect::to('/account');
 			}
 			catch (ParseException $error) {
 	            // The login failed. Check error to see why.
 	            //echo "Error: " . $error->getCode() . " " . $error->getMessage();
 	            Session::flash('success', 'Profile Saved!');
-	            return Redirect::to('account');
+	            return Redirect::to('/account');
             }
 		}
 	}
@@ -152,6 +151,15 @@ class ProfileController extends BaseController {
 		$data['handle'] = Auth::user()->handle;
 		return View::make('profile.wall')->with($data);
 	}
+
+	public function viewUpdates(){
+		$html = '';	
+		$data = array();
+		$data['html'] = $html;
+		$data['handle'] = Auth::user()->handle;
+		return View::make('profile.updates')->with($data);
+	}
+
 	public function viewWall($handle){
 		$html = '';	
 		$data = array();
@@ -200,5 +208,9 @@ class ProfileController extends BaseController {
 		$data['html'] = $html;
 		$data['handle'] = $handle;
 		return View::make('profile.questions')->with($data);
+	}
+
+	public function editProfile(){
+		
 	}
 }

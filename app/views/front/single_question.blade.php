@@ -5,17 +5,22 @@
 		<span class="entry-title">{{$data['question']['title']}}</span>
 	</h1>
 	<div class="qa-part-q-view">
+	<!--Error if user try to vote without login-->
+	@if ((Session::has('logintovote') && Session::get('logintovote')==$data['question']['postid']) || (Session::has('logintoflag') && Session::get('logintoflag')==$data['question']['postid']))
+	<div id="errorbox" class="qa-error" style="">Please <a href="{{URL::to('/login')}}">log in</a> or <a href="{{URL::to('/register')}}">register</a> to vote.</div>
+	@else
+	<div id="errorbox" class="qa-error" style="display:none">Please <a href="">log in</a> or <a href="">register</a> to vote.</div>
+	@endif
 		<div id="q11" class="qa-q-view  hentry question">
-			<form action="./index.php?qa=11&amp;qa_1=what-is-your-filezilla" method="post">
+			{{ Form::open(array('url' => URL::to('/votes'))) }}
+			{{ Form::hidden('current_url',Request::url()) }}
+			{{ Form::hidden('postid',$data['question']['postid']) }}
 				<div class="qa-q-view-stats">
 					<div id="voting_11" class="qa-voting qa-voting-net">
-						<div class="qa-vote-buttons qa-vote-buttons-net">
-							<input type="submit" class="qa-vote-first-button qa-vote-up-button" value="+" onclick="return qa_vote_click(this);" name="vote_11_1_q11" title="Click to vote up"> 
-							<input type="submit" class="qa-vote-second-button qa-vote-down-button" value="&ndash;" onclick="return qa_vote_click(this);" name="vote_11_-1_q11" title="Click to vote down"> 
-						</div>
+						{{Votes::vote_buttons(with(new VotesModel)->getVotes($data['question']))}}
 						<div class="qa-vote-count qa-vote-count-net">
 							<span class="qa-netvote-count">
-								<span class="qa-netvote-count-data">0<span class="votes-up"><span title="0" class="value-title"></span></span><span class="votes-down"><span title="0" class="value-title"></span></span></span><span class="qa-netvote-count-pad"> votes</span>
+								<span class="qa-netvote-count-data">{{$data['question']['netvotes']}}<span class="votes-up"><span title="0" class="value-title"></span></span><span class="votes-down"><span title="0" class="value-title"></span></span></span><span class="qa-netvote-count-pad"> votes</span>
 							</span>
 						</div>
 						<div class="qa-vote-clear">
@@ -25,7 +30,9 @@
 				<input type="hidden" value="0-1417695874-b22f2c297205a49aa4112f4074cc159ccb10b6fd" name="code">
 			</form>
 			<div class="qa-q-view-main">
-				<form action="./index.php?qa=11&amp;qa_1=what-is-your-filezilla" method="post">
+				{{ Form::open(array('url' => URL::to('/button'))) }}
+				{{ Form::hidden('current_url',Request::url()) }}
+				{{ Form::hidden('postid',$data['question']['postid']) }}
 					<div class="qa-q-view-content">
 						<a name="11"></a><div class="entry-content">{{{$data['question']['content']}}}</div>
 					</div>
@@ -36,7 +43,7 @@
 					</div>
 					<span class="qa-q-view-avatar-meta">
 						<span class="qa-q-view-meta">
-							<a class="qa-q-view-what" href="./index.php?qa=11&amp;qa_1=what-is-your-filezilla">asked</a>
+							asked
 							<span class="qa-q-view-when">
 								<span class="qa-q-view-when-data"><span class="published"><span title="2014-12-04T09:50:31+0000" class="value-title"></span>2 hours</span></span><span class="qa-q-view-when-pad"> ago</span>
 							</span>
@@ -49,10 +56,13 @@
 							</span>
 						</span>
 					</span>
-					<div class="qa-q-view-buttons">
+					
+						<!--<div class="qa-q-view-buttons">
 						<input type="submit" class="qa-form-light-button qa-form-light-button-flag" title="Flag this question as spam or inappropriate" value="flag" onclick="qa_show_waiting_after(this, false);" name="q_doflag">
 						<input type="submit" class="qa-form-light-button qa-form-light-button-answer" title="Answer this question" value="answer" onclick="return qa_toggle_element('anew')" id="q_doanswer" name="q_doanswer">
-					</div>
+						</div>-->
+						{{SideButtons::getButtons(with(new ButtonsModel)->getButtons($data['question']))}}
+					
 					
 					<div id="c11_list" style="display:none;" class="qa-q-view-c-list">
 					</div> <!-- END qa-c-list -->
@@ -134,15 +144,19 @@
 			{{ Form::hidden('qa',$record['postid']) }}
 			<!--Single Answer Block Start-->
 			<div id="a12" class="qa-a-list-item  hentry answer">
-				<form action="./index.php?qa=11&amp;qa_1=what-is-your-filezilla" method="post">
+				{{ Form::open(array('url' => URL::to('/votes'))) }}
+				{{ Form::hidden('current_url',Request::url()) }}
+				{{ Form::hidden('postid',$record['postid']) }}
+				@if (Session::has('logintovote') && Session::get('logintovote')==$record['postid'])
+				<div id="errorbox" class="qa-error" style="">Please <a href="{{URL::to('/login')}}">log in</a> or <a href="{{URL::to('/register')}}">register</a> to vote.</div>
+				@else
+				<div id="errorbox" class="qa-error" style="display:none">Please <a href="">log in</a> or <a href="">register</a> to vote.</div>
+				@endif
 					<div id="voting_12" class="qa-voting qa-voting-net">
-						<div class="qa-vote-buttons qa-vote-buttons-net">
-							<input type="submit" disabled="disabled" class="qa-vote-first-button qa-vote-up-disabled" value="" title="You cannot vote on your own answers"> 
-							<input type="submit" disabled="disabled" class="qa-vote-second-button qa-vote-down-disabled" value="" title="You cannot vote on your own answers"> 
-						</div>
+						{{Votes::vote_buttons(with(new VotesModel)->getVotes($record))}}
 						<div class="qa-vote-count qa-vote-count-net">
 							<span class="qa-netvote-count">
-								<span class="qa-netvote-count-data">0<span class="votes-up"><span title="0" class="value-title"></span></span><span class="votes-down"><span title="0" class="value-title"></span></span></span><span class="qa-netvote-count-pad"> votes</span>
+								<span class="qa-netvote-count-data">{{$record['netvotes']}}<span class="votes-up"><span title="0" class="value-title"></span></span><span class="votes-down"><span title="0" class="value-title"></span></span></span><span class="qa-netvote-count-pad"> votes</span>
 							</span>
 						</div>
 						<div class="qa-vote-clear">
@@ -205,7 +219,7 @@
 									</span>
 									<div class="qa-c-item-buttons">
 										<input name="c38_doflag" onclick="return qa_comment_click(38, 11, 12, this);" value="flag" title="Flag this comment as spam or inappropriate" type="submit" class="qa-form-light-button qa-form-light-button-flag">
-										<input name="a12_docomment" onclick="return qa_toggle_element('c12')" value="reply" title="Reply to this comment" type="submit" class="qa-form-light-button qa-form-light-button-comment">
+										<input name="a12_docomment" onclick="return qa_toggle_element('c{{$ans}}')" value="reply" title="Reply to this comment" type="submit" class="qa-form-light-button qa-form-light-button-comment">
 									</div>
 								</div>
 								<div class="qa-c-item-clear">
@@ -219,14 +233,21 @@
 						<input type="hidden" value="" name="qa_click">
 					</form>
 					<!-- form for comment-->
-					<div style="display:none;" id="c{{$ans}}" class="qa-c-form">
+					@if ($errors->has('c'.$ans.'_content'))
+					<div id="c{{$ans}}" class="qa-c-form">
+					@else
+					<div id="c{{$ans}}" style="display:none;" class="qa-c-form">
+					@endif
 						<h2>Your comment on this answer:</h2>
 						{{ Form::open(array('url' => URL::to('/doComments'),'name' => 'c_form_'.$ans)) }}
-						{{ Form::hidden('qa',$record['postid']) }}
+						{{ Form::hidden('c_parentid',$record['postid']) }}
+						{{ Form::hidden('c_questionid',$data['question']['postid']) }}
 							<table class="qa-form-tall-table">
 								<tbody><tr>
 									<td class="qa-form-tall-data">
-										<textarea class="qa-form-tall-text" cols="40" rows="4" id="c{{$ans}}_content" name="c{{$ans}}_content"></textarea>
+										<!--<textarea class="qa-form-tall-text" cols="40" rows="4" id="c{{$ans}}_content" name="c{{$ans}}_content"></textarea>-->
+										{{ Form::textarea('c'.$ans.'_content', Input::old('c'.$ans.'_content'), array('placeholder' => 'Answer','class'=>'qa-form-tall-text','size' => '40x12')) }}
+										@if ($errors->has('c'.$ans.'_content'))<div class="qa-form-tall-error">{{ $errors->first('c'.$ans.'_content') }}</div> @endif
 									</td>
 								</tr>
 								<tr>

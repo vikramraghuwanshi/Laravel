@@ -67,7 +67,7 @@ class AnswerController extends BaseController {
 		);
 		// run the validation rules on the inputs from the form
 		$validator = Validator::make(Input::all(), $rules);
-		if ($validator->fails()) {
+		if ($validator->fails()) {//die(' validation_fails');
 			return Redirect::to('/question/'.Input::get('c_questionid'))
 			->withErrors($validator); // send back all errors current page
 		}
@@ -96,15 +96,7 @@ class AnswerController extends BaseController {
 			    	 	 'notify' => Input::get('c'.Input::get('c_parentid').'_name'))
 				);
 
-
-
-
-				//DB::table('posts')
-            	//	->where('postid', Input::get('qa'))
-            	//	->increment('acount');
-		            
-						
-                //return Redirect::to('/question/'.Input::get('qa'));
+				return Redirect::to('/question/'.Input::get('c_questionid'));
 			}
 			catch(ParseException $error){
 

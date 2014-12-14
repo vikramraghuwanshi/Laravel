@@ -5,7 +5,7 @@
 	{{$html}}
 
 	<div class="qa-part-form-profile">
-		{{ Form::open(array('url' => 'doLogin')) }}
+		{{ Form::open(array('url' => '/account')) }}
 				<table class="qa-form-wide-table">
 					<tbody>
 						<tr id="duration">
